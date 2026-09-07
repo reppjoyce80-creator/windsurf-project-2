@@ -10,8 +10,8 @@
 </script>
 
 <Seo
-  title="Status — freehire ingest fleet"
-  description="Live health of the freehire ingest fleet: which ATS providers are operational, degraded, or down, rolled up from the crawl's own board-health signal."
+  title="Status — HireAll ingest fleet"
+  description="Live health of the HireAll ingest fleet: which ATS providers are operational, degraded, or down, rolled up from the crawl's own board-health signal."
   {canonical}
 />
 

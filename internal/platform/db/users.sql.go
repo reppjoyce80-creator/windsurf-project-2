@@ -1019,3 +1019,72 @@ func (q *Queries) UserEmail(ctx context.Context, id int64) (string, error) {
 	err := row.Scan(&email)
 	return email, err
 }
+
+const createGuestUser = `-- name: CreateGuestUser :one
+INSERT INTO users (email, is_guest, guest_expires_at)
+VALUES ($1, true, $2)
+RETURNING id
+`
+
+type CreateGuestUserParams struct {
+	Email          string             `json:"email"`
+	GuestExpiresAt pgtype.Timestamptz `json:"guest_expires_at"`
+}
+
+// Provision a disposable guest account: a synthetic, guaranteed-unique email (the
+// handler mints "guest-<uuid>@guest.invalid" -- guests never sign in by password, so
+// the address only has to satisfy the NOT NULL UNIQUE constraint, never a mailbox),
+// is_guest true, and guest_expires_at stamped by the caller (EnsureGuestSession, from
+// the configured guest TTL). token_version starts at its column default (1), so the
+// very first token minted for this row is born valid with no extra read.
+func (q *Queries) CreateGuestUser(ctx context.Context, arg CreateGuestUserParams) (int64, error) {
+	row := q.db.QueryRow(ctx, createGuestUser, arg.Email, arg.GuestExpiresAt)
+	var id int64
+	err := row.Scan(&id)
+	return id, err
+}
+
+const getUserSessionState = `-- name: GetUserSessionState :one
+SELECT token_version, is_guest, guest_expires_at
+FROM users
+WHERE id = $1
+`
+
+type GetUserSessionStateRow struct {
+	TokenVersion   int32              `json:"token_version"`
+	IsGuest        bool               `json:"is_guest"`
+	GuestExpiresAt pgtype.Timestamptz `json:"guest_expires_at"`
+}
+
+// What EnsureGuestSession needs to decide whether a presented cookie is still live:
+// the account's current token generation (the same revocation check every other auth
+// path makes against GetUserTokenVersion) plus whether this is a guest account and,
+// if so, when it expires. A guest whose guest_expires_at has passed reads as gone here
+// even in the small window before the cleanup sweep (DeleteExpiredGuests) actually
+// deletes the row, so an expiring guest can never be treated as live for longer than
+// its own TTL just because the sweep hasn't run yet.
+func (q *Queries) GetUserSessionState(ctx context.Context, id int64) (GetUserSessionStateRow, error) {
+	row := q.db.QueryRow(ctx, getUserSessionState, id)
+	var i GetUserSessionStateRow
+	err := row.Scan(&i.TokenVersion, &i.IsGuest, &i.GuestExpiresAt)
+	return i, err
+}
+
+const deleteExpiredGuests = `-- name: DeleteExpiredGuests :execrows
+DELETE FROM users
+WHERE is_guest = true AND guest_expires_at < now()
+`
+
+// The cleanup sweep: reap every guest account whose guest_expires_at has passed.
+// ON DELETE CASCADE across the FK web every user-owned table declares back to
+// users.id (see DeleteUser above) does the rest in this same statement -- applied
+// jobs, saved searches, tracking rows, everything the guest touched disappears with
+// the account. Never matches a non-guest row: guest_expires_at is NULL for every
+// real account, and NULL < now() is never true.
+func (q *Queries) DeleteExpiredGuests(ctx context.Context) (int64, error) {
+	result, err := q.db.Exec(ctx, deleteExpiredGuests)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
+}

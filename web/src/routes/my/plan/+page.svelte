@@ -3,7 +3,7 @@
 </script>
 
 <svelte:head>
-  <title>Your plan — freehire</title>
+  <title>Your plan — HireAll</title>
 </svelte:head>
 
 <!-- The account shell (my/+layout) owns the container, auth gate, and noindex;

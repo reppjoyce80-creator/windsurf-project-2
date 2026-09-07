@@ -68,7 +68,7 @@ export default {
           'self',
           // Anti-FOUC script in app.html — theme + Product Hunt strip + onboarding
           // nudge (see WARNING above).
-          'sha256-u3FGDCCLNrppO+D5gI/BmV8qq0wTVlA/OoPesWqF1Ts=',
+          'sha256-a5sckU3cJJD+ui+fe/ZVmj9yZ3rDV6997gBhPCz/Sx4=',
           // Google Analytics: the gtag.js host. GA now loads from the same-origin
           // bundle ($lib/analytics, consent-gated), so no inline-script hash is
           // needed — only the external host it injects.

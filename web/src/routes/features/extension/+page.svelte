@@ -16,7 +16,7 @@
       extensionApplicationJsonLd(origin, EXTENSION_STORE_URL),
       faqPageJsonLd(EXTENSION_FAQ),
       breadcrumbJsonLd([
-        { name: 'freehire', url: `${origin}/` },
+        { name: 'HireAll', url: `${origin}/` },
         { name: 'Browser extension', url: canonical },
       ]),
     ])
@@ -24,8 +24,8 @@
 </script>
 
 <Seo
-  title="freehire for Chrome — a job-application agent in the side panel"
-  description="Open the freehire side panel on any job posting: it reads the page itself, scores it against your CV, and fills the application form from your profile. Greenhouse, Lever, Workday, Ashby — or a career page nobody has heard of. You press Submit."
+  title="HireAll for Chrome — a job-application agent in the side panel"
+  description="Open the HireAll side panel on any job posting: it reads the page itself, scores it against your CV, and fills the application form from your profile. Greenhouse, Lever, Workday, Ashby — or a career page nobody has heard of. You press Submit."
   {canonical}
 />
 

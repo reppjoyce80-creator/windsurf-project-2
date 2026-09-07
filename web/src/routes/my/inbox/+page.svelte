@@ -3,7 +3,7 @@
 </script>
 
 <svelte:head>
-  <title>Inbox — freehire</title>
+  <title>Inbox — HireAll</title>
 </svelte:head>
 
 <!-- The account shell (my/+layout) owns the container, auth gate, and noindex. A

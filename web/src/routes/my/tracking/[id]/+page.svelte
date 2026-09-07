@@ -6,7 +6,7 @@
 </script>
 
 <svelte:head>
-  <title>Tracking — freehire</title>
+  <title>Tracking — HireAll</title>
 </svelte:head>
 
 <!-- Same board as /my/tracking, but opened on the given application's drawer. -->

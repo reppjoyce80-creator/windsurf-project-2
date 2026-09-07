@@ -76,7 +76,7 @@
   // mark. All three follow the muted text colour (so they match and hover works).
   const socials = [
     { provider: 'github', label: 'GitHub', href: 'https://github.com/strelov1/freehire' },
-    { provider: 'linkedin', label: 'LinkedIn', href: 'https://linkedin.com/company/freehire-dev/' },
+    { provider: 'linkedin', label: 'LinkedIn', href: 'https://linkedin.com/company/HireAll-dev/' },
     { provider: 'telegram', label: 'Telegram', href: 'https://t.me/freehiredev' },
     { provider: 'discord', label: 'Discord', href: 'https://discord.gg/sYnZksswR' },
   ];
@@ -95,8 +95,8 @@
   // paint). Both URLs are Product Hunt's own, copied verbatim including the `t=`
   // cache-buster it stamps per variant.
   const productHunt = {
-    href: 'https://www.producthunt.com/products/freehire?embed=true&utm_source=badge-featured&utm_medium=badge&utm_campaign=badge-freehire',
-    alt: 'freehire - The open-source job search that covers every board | Product Hunt',
+    href: 'https://www.producthunt.com/products/HireAll?embed=true&utm_source=badge-featured&utm_medium=badge&utm_campaign=badge-HireAll',
+    alt: 'HireAll - The open-source job search that covers every board | Product Hunt',
     light:
       'https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1196233&theme=light&t=1785605037608',
     dark: 'https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1196233&theme=dark&t=1785605357228',

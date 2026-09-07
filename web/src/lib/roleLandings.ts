@@ -188,7 +188,7 @@ export function landingIntro({ category, countryCode, total, fresh, topSkills }:
   const what = categoryLabel(category);
   const where = countryLabel(countryCode);
 
-  const sentences = [`There are ${count(total)} open ${what} jobs in ${where} on freehire right now.`];
+  const sentences = [`There are ${count(total)} open ${what} jobs in ${where} on HireAll right now.`];
   if (fresh > 0) {
     sentences.push(`${count(fresh)} of them were posted recently.`);
   }

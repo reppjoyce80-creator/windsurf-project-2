@@ -3,7 +3,7 @@
 </script>
 
 <svelte:head>
-  <title>My submissions — freehire</title>
+  <title>My submissions — HireAll</title>
 </svelte:head>
 
 <!-- The account shell (my/+layout) owns the container, auth gate, and noindex;

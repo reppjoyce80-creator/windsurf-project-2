@@ -12,7 +12,7 @@ export const accountNav = [
   { href: '/my/profile', label: 'Profile' },
   { href: '/my/activity', label: 'Activity' },
   { href: '/my/tracking', label: 'Tracking' },
-  // Mail inbox: connect Gmail and/or claim a freehire mailbox to track application
+  // Mail inbox: connect Gmail and/or claim a HireAll mailbox to track application
   // replies. Open to every signed-in user.
   { href: '/my/inbox', label: 'Inbox' },
   // Personal skill-demand trend: how the market for the candidate's own profile

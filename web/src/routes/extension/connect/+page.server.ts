@@ -17,7 +17,7 @@ export const load: PageServerLoad = async ({ parent, url }) => {
   const state = url.searchParams.get('state') ?? '';
   // Reached without the extension's parameters — nothing to connect.
   if (!redirectUri) {
-    error(400, 'This page is opened by the freehire browser extension.');
+    error(400, 'This page is opened by the HireAll browser extension.');
   }
 
   const { user } = await parent();

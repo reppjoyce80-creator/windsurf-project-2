@@ -28,7 +28,7 @@
 {#snippet mailHeader()}
   <div class="flex items-center gap-2">
     <BrandMark class="size-5 text-foreground" />
-    <span class="text-sm font-bold">freehire</span>
+    <span class="text-sm font-bold">HireAll</span>
   </div>
 {/snippet}
 
@@ -49,7 +49,7 @@
         You don't refresh the feed. It comes to you.
       </h1>
       <p class="mt-7 max-w-xl text-lg leading-relaxed text-muted-foreground">
-        Save a search once and freehire watches it for you — instantly, or as a daily digest. The
+        Save a search once and HireAll watches it for you — instantly, or as a daily digest. The
         same settings also carry your tracking nudges, so a new match and a stalled application
         both reach you the same way: email, Telegram, or push.
       </p>
@@ -118,7 +118,7 @@
       <div class="bg-background p-6 sm:p-7">
         <h3 class="text-lg font-semibold tracking-tight">A job that just appeared</h3>
         <p class="mt-2 text-sm leading-relaxed text-muted-foreground">
-          Save a search — stack, seniority, region, salary — and freehire matches new postings
+          Save a search — stack, seniority, region, salary — and HireAll matches new postings
           against it as they're added. Get told instantly, or once a day at a time you pick.
         </p>
         <a
@@ -178,7 +178,7 @@
             <span class="mt-5 inline-block rounded-md bg-brand px-4 py-2 text-sm font-medium text-brand-foreground">
               View all — 12 more
             </span>
-            {@render mailFooter("You're getting this because you set up a job alert on freehire.")}
+            {@render mailFooter("You're getting this because you set up a job alert on HireAll.")}
           </div>
         </div>
       </figure>
@@ -203,7 +203,7 @@
             <span class="mt-5 inline-block rounded-md bg-brand px-4 py-2 text-sm font-medium text-brand-foreground">
               Open your tracking board
             </span>
-            {@render mailFooter("You're getting this because you're tracking this application on freehire.")}
+            {@render mailFooter("You're getting this because you're tracking this application on HireAll.")}
           </div>
         </div>
       </figure>
@@ -267,7 +267,7 @@
     <div class="flex flex-col items-start gap-4 rounded-xl border border-border bg-secondary/40 p-6 sm:p-8">
       <h2 class="text-2xl font-semibold tracking-tight">Stop checking back to find out.</h2>
       <p class="max-w-xl leading-relaxed text-muted-foreground">
-        Save the next search worth watching and freehire tells you the moment — or the day — it
+        Save the next search worth watching and HireAll tells you the moment — or the day — it
         matters.
       </p>
       <div class="flex flex-wrap gap-3">

@@ -12,8 +12,8 @@
 </script>
 
 <Seo
-  title="Ghost jobs — which postings are not being filled, and why we think so | freehire"
-  description="Between 18% and 27% of listings are jobs nobody is working to fill. freehire watches how a posting behaves and what happened to people who applied, then shows the facts behind every warning — never a claim about an employer's intent."
+  title="Ghost jobs — which postings are not being filled, and why we think so | HireAll"
+  description="Between 18% and 27% of listings are jobs nobody is working to fill. HireAll watches how a posting behaves and what happened to people who applied, then shows the facts behind every warning — never a claim about an employer's intent."
   {canonical}
 />
 

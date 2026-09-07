@@ -3,7 +3,7 @@
   import { resolve } from '$app/paths';
   import { Bell, Info, UserRound } from '@lucide/svelte';
   import { Tooltip } from '$lib/ui';
-  import { EMPLOYER_CREDENTIALS, FACETS, JOB_COLLECTION } from '$lib/facets';
+  import { EMPLOYER_CREDENTIALS, JOB_COLLECTION } from '$lib/facets';
   import { isAuthenticated } from '$lib/auth.svelte';
   import { openAuthDialog } from '$lib/auth-dialog.svelte';
   import { profileStore } from '$lib/profile.svelte';
@@ -12,19 +12,8 @@
   import { StagedFilters } from '$lib/stagedFilters.svelte';
   import { RAIL, RAIL_SECTIONS, type RailEntry, type RailSection } from '$lib/filterSections';
   import type { FacetCounts } from '$lib/types';
-  import {
-    EXPERIENCE_PRESETS,
-    FRESHNESS_PRESETS,
-    SALARY_MAX,
-    SALARY_STEP,
-    experienceLabel,
-    freshnessLabel,
-  } from '$lib/filterControls';
-  import FacetSection from '../facets/FacetSection.svelte';
-  import ChipFacet from './ChipFacet.svelte';
-  import CategoryPane from './CategoryPane.svelte';
-  import LocationPane from './LocationPane.svelte';
   import FilterModalShell from './FilterModalShell.svelte';
+  import FilterPaneContent from './FilterPaneContent.svelte';
   import SavedSearches from '../SavedSearches.svelte';
 
   // The job-search filter modal: a thin wrapper over FilterModalShell that supplies the
@@ -136,15 +125,6 @@
     ),
   ]);
 
-  // The clearance control's three states. It is not a FACETS entry (it filters on a
-  // single boolean attribute, not a value vocabulary), so its options live here rather
-  // than in the facet registry.
-  const CLEARANCE_OPTIONS: { value: ClearanceFilter; label: string }[] = [
-    { value: 'any', label: 'Any' },
-    { value: 'hide', label: 'Hide' },
-    { value: 'only', label: 'Only' },
-  ];
-
   const jobCollectionValues = JOB_COLLECTION.map((o) => o.value);
   const employerCredentialValues = EMPLOYER_CREDENTIALS.map((o) => o.value);
 
@@ -185,15 +165,6 @@
     return selCount(f, e.facetParam ?? e.key);
   }
 
-  const englishDef = FACETS.find((d) => d.param === 'english_level');
-  const postingDef = FACETS.find((d) => d.param === 'posting_language');
-
-  // In plain mode strip the search-only exclude/match toggles from a facet control.
-  function facetDefFor(param: string | undefined) {
-    const d = FACETS.find((x) => x.param === param);
-    return d && plain ? { ...d, excludable: false, hasAndOr: false } : d;
-  }
-
   function seedStaged() {
     staged.seed(seed ?? store?.value ?? emptyFilters());
   }
@@ -207,23 +178,6 @@
   }
 
   const applyDisabled = $derived(canApply ? !canApply(staged.value) : false);
-
-  // A non-preset value (hand-edited URL) has no exact stop, so it reads as "Any"
-  // (the rightmost stop) rather than snapping to "Today".
-  const freshnessIndex = $derived.by(() => {
-    const i = FRESHNESS_PRESETS.findIndex((p) => p.days === staged.value.postedWithinDays);
-    return i < 0 ? FRESHNESS_PRESETS.length - 1 : i;
-  });
-
-  // Same snap-to-Any rule as freshness above: an off-preset bound (hand-edited or
-  // shared URL) has no exact stop, so the handle rests on the rightmost one. The
-  // LABEL still reports the real bound — see experienceLabel — so the two do not
-  // agree here on purpose: the handle says "no stop matches", the text says what
-  // is actually filtering.
-  const experienceIndex = $derived.by(() => {
-    const i = EXPERIENCE_PRESETS.findIndex((p) => p.years === staged.value.experienceYearsMax);
-    return i < 0 ? EXPERIENCE_PRESETS.length - 1 : i;
-  });
 </script>
 
 <FilterModalShell
@@ -320,170 +274,18 @@
 {/snippet}
 
 {#snippet pane(entry: RailEntry, live: FacetCounts | null)}
-  {@const c = live ?? counts}
   {#if entry.kind === 'saved'}
     <SavedSearches store={staged} />
-  {:else if entry.kind === 'category'}
-    {@const roleDef = facetDefFor('role')}
-    {#if roleDef && !exclude.includes('role')}
-      <div class="mb-6"><FacetSection def={roleDef} store={staged} counts={c} expand /></div>
-    {/if}
-    <CategoryPane store={staged} {plain} counts={c} />
-    {#if !exclude.includes('ai_archetype')}
-      {@const aiArchetypeDef = facetDefFor('ai_archetype')}
-      {#if aiArchetypeDef}
-        <div class="mt-6"><FacetSection def={aiArchetypeDef} store={staged} counts={c} expand /></div>
-      {/if}
-    {/if}
-  {:else if entry.kind === 'location'}
-    <LocationPane store={staged} counts={c} />
-  {:else if entry.kind === 'facet'}
-    {@const def = facetDefFor(entry.facetParam)}
-    {#if entry.key === 'skills' && matchAvailable}
-      <!-- Client-only post-filter (see `minMatch`/`onMinMatchChange` props): re-filters
-           the already-fetched page in memory, so it applies immediately, no debounce. -->
-      <div class="mb-2 flex items-center justify-between">
-        <h3 class="text-sm font-semibold tracking-tight">Minimum skill match</h3>
-        <span class="text-xs font-medium text-muted-foreground">{minMatch != null ? `${minMatch}%+` : 'Any'}</span>
-      </div>
-      <input
-        type="range"
-        min="0"
-        max="100"
-        step="5"
-        value={minMatch ?? 0}
-        oninput={(e) => onMinMatchChange?.(Number(e.currentTarget.value) || null)}
-        aria-label="Minimum skill match"
-        class="mb-6 w-full accent-primary"
-      />
-    {/if}
-    {#if def}<FacetSection {def} store={staged} counts={c} expand />{/if}
-  {:else if entry.kind === 'salary'}
-    <ChipFacet store={staged} param="salary_currency" label="Currency" counts={c} />
-    <div class="mb-2 mt-6 flex items-center justify-between">
-      <h3 class="text-sm font-semibold tracking-tight">Minimum salary</h3>
-      <span class="text-xs font-medium text-muted-foreground"
-        >{staged.value.salaryMin ? `${staged.value.salaryMin.toLocaleString('en-US')}+` : 'Any'}</span
-      >
-    </div>
-    <input
-      type="range"
-      min="0"
-      max={SALARY_MAX}
-      step={SALARY_STEP}
-      value={staged.value.salaryMin ?? 0}
-      oninput={(e) => staged.setSalaryMin(Number(e.currentTarget.value) || null)}
-      aria-label="Minimum salary"
-      class="w-full accent-primary"
-    />
-  {:else if entry.kind === 'experience'}
-    {@const showSeniority = !exclude.includes('seniority')}
-    {@const showRoleType = !exclude.includes('role_type')}
-    {#if showSeniority}
-      <ChipFacet store={staged} param="seniority" label="Seniority" counts={c} />
-    {/if}
-    <!-- Directly beneath seniority on purpose: the two are the axes users conflate.
-         "Lead" reads to many as a management grade, while in this catalogue it names
-         the IC ladder — of the 116,893 postings at seniority=lead, only 3,303 carry
-         any management marker. Adjacency is what makes them read as two questions. -->
-    {#if showRoleType}
-      <div class:mt-6={showSeniority}>
-        <ChipFacet store={staged} param="role_type" label="Role type" counts={c} />
-      </div>
-    {/if}
-    <div class:mt-6={showSeniority || showRoleType}>
-      <div class="mb-2 flex items-center justify-between">
-        <h3 class="text-sm font-semibold tracking-tight">Years of experience</h3>
-        <span class="text-xs font-medium text-muted-foreground"
-          >{experienceLabel(staged.value.experienceYearsMax)}</span
-        >
-      </div>
-      <input
-        type="range"
-        min="0"
-        max={EXPERIENCE_PRESETS.length - 1}
-        step="1"
-        value={experienceIndex}
-        oninput={(e) => staged.setExperienceYearsMax(EXPERIENCE_PRESETS[Number(e.currentTarget.value)]?.years ?? null)}
-        aria-label="Maximum years of experience"
-        class="w-full accent-primary"
-      />
-      <!-- Roughly half the catalogue states no experience requirement at all, and a
-           bound excludes every one of those postings. Shown permanently rather than
-           only once bounded: a result count that collapses without explanation is
-           read as a broken filter, and by then the user has already been misled. The
-           sentence is therefore about what SETTING a bound does, so it stays true at
-           the unbounded "Any" stop instead of describing a filter that is not on. -->
-      <p class="mt-2 text-xs text-muted-foreground">
-        Setting a limit matches only postings that state an experience requirement — about half of them.
-      </p>
-    </div>
-  {:else if entry.kind === 'work'}
-    <ChipFacet store={staged} param="work_mode" label="Work format" counts={c} />
-    <div class="mt-6"><ChipFacet store={staged} param="employment_type" label="Employment type" counts={c} /></div>
-  {:else if entry.kind === 'industry'}
-    <ChipFacet store={staged} param="domains" label="Industry" counts={c} />
-    <div class="mt-6"><ChipFacet store={staged} param="company_type" label="Company type" counts={c} /></div>
-    <div class="mt-6">
-      <ChipFacet store={staged} param="collections" label="Collection" counts={c} options={JOB_COLLECTION} />
-    </div>
-  {:else if entry.kind === 'language'}
-    {#if englishDef}<FacetSection def={englishDef} store={staged} counts={c} expand />{/if}
-    <div class="mt-4">{#if postingDef}<FacetSection def={postingDef} store={staged} counts={c} expand />{/if}</div>
-  {:else if entry.kind === 'relocation'}
-    <ChipFacet store={staged} param="relocation" label="Relocation" counts={c} />
-    <div class="mt-6">
-      <ChipFacet
-        store={staged}
-        param="collections"
-        label="Employer credentials"
-        counts={c}
-        options={EMPLOYER_CREDENTIALS}
-      />
-    </div>
-    <h3 class="mb-2 mt-6 text-sm font-semibold tracking-tight">Visa</h3>
-    <label class="flex cursor-pointer items-center gap-2 text-sm">
-      <input
-        type="checkbox"
-        class="size-4 rounded border-border"
-        checked={staged.value.visa}
-        onchange={(e) => staged.setVisa(e.currentTarget.checked)}
-      />
-      <span>Offers visa sponsorship</span>
-    </label>
-    <h3 class="mb-2 mt-6 text-sm font-semibold tracking-tight">Security clearance</h3>
-    <div class="inline-flex overflow-hidden rounded-md border border-border" role="group">
-      {#each CLEARANCE_OPTIONS as opt (opt.value)}
-        <button
-          type="button"
-          class="px-3 py-1.5 text-sm transition-colors {staged.value.clearance === opt.value
-            ? 'bg-primary text-primary-foreground'
-            : 'bg-background hover:bg-muted'}"
-          aria-pressed={staged.value.clearance === opt.value}
-          onclick={() => staged.setClearance(opt.value)}
-        >
-          {opt.label}
-        </button>
-      {/each}
-    </div>
-    <p class="mt-2 text-xs text-muted-foreground">
-      Government vetting — UK SC/DV, US Secret/TS-SCI, AU NV1. Only is for candidates who
-      already hold one.
-    </p>
-  {:else if entry.kind === 'posted'}
-    <div class="mb-2 flex items-center justify-between">
-      <h3 class="text-sm font-semibold tracking-tight">Posted within</h3>
-      <span class="text-xs font-medium text-muted-foreground">{freshnessLabel(staged.value.postedWithinDays)}</span>
-    </div>
-    <input
-      type="range"
-      min="0"
-      max={FRESHNESS_PRESETS.length - 1}
-      step="1"
-      value={freshnessIndex}
-      oninput={(e) => staged.setPostedWithinDays(FRESHNESS_PRESETS[Number(e.currentTarget.value)]?.days ?? null)}
-      aria-label="Posted within"
-      class="w-full accent-primary"
+  {:else}
+    <FilterPaneContent
+      {entry}
+      store={staged}
+      counts={live ?? counts}
+      {exclude}
+      {plain}
+      {matchAvailable}
+      {minMatch}
+      {onMinMatchChange}
     />
   {/if}
 {/snippet}

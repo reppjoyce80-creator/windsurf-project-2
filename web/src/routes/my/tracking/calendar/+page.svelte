@@ -6,7 +6,7 @@
 </script>
 
 <svelte:head>
-  <title>Calendar — Tracking — freehire</title>
+  <title>Calendar — Tracking — HireAll</title>
 </svelte:head>
 
 <TrackingCalendar prefetched={data.prefetched} />

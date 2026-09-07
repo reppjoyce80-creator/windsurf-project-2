@@ -22,6 +22,6 @@
   });
 </script>
 
-<svelte:head><title>Opening CV… — freehire</title></svelte:head>
+<svelte:head><title>Opening CV… — HireAll</title></svelte:head>
 
 <p class="text-muted-foreground">Opening your tailoring workspace…</p>

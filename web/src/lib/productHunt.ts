@@ -20,7 +20,7 @@ export const PH_DISMISSED_KEY = 'hire.ph-banner-dismissed';
 /** Where the banner points. Carries its own campaign so the launch-day traffic is
  *  separable from the footer badge's. */
 export const PH_URL =
-  'https://www.producthunt.com/products/freehire?utm_source=freehire&utm_medium=banner&utm_campaign=launch';
+  'https://www.producthunt.com/products/HireAll?utm_source=HireAll&utm_medium=banner&utm_campaign=launch';
 
 /** Which message the banner should carry, or `over` once the launch day has passed
  *  and it should not render at all. */

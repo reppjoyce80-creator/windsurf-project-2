@@ -9,14 +9,14 @@
 
   const canonical = $derived(`${page.url.origin}/privacy`);
 
-  // Static effective date — freehire has no Date.now-driven content, and a hard
+  // Static effective date — HireAll has no Date.now-driven content, and a hard
   // date is what a privacy policy needs. Bump this whenever the policy changes.
   const lastUpdated = 'August 12, 2026';
 </script>
 
 <Seo
-  title="Privacy Policy — freehire"
-  description="How freehire, the open-source IT job aggregator, collects, uses, and stores your data: accounts, job tracking, CV analysis, cookies, and third-party services."
+  title="Privacy Policy — HireAll"
+  description="How HireAll, the open-source IT job aggregator, collects, uses, and stores your data: accounts, job tracking, CV analysis, cookies, and third-party services."
   {canonical}
 />
 
@@ -31,7 +31,7 @@
     </header>
 
     <p class="text-base leading-relaxed text-muted-foreground">
-      freehire (<a
+      HireAll (<a
         href="https://freehire.me"
         class="font-medium text-foreground underline-offset-4 hover:underline">freehire.me</a
       >) is a free, open-source IT job aggregator. This policy explains what data we collect, why,
@@ -111,7 +111,7 @@
     <section class="flex flex-col gap-3">
       <h2 class="text-xl font-semibold tracking-tight">Third-party services</h2>
       <p class="text-sm leading-relaxed text-muted-foreground">
-        We rely on a small set of processors to run freehire:
+        We rely on a small set of processors to run HireAll:
       </p>
       <ul class="flex flex-col gap-2 text-sm leading-relaxed text-muted-foreground">
         <li>
@@ -132,7 +132,7 @@
           — only if you choose to sign in with them, to verify your identity and email.
         </li>
         <li>
-          <span class="font-medium text-foreground">ChatGPT Actions</span> — if you connect freehire
+          <span class="font-medium text-foreground">ChatGPT Actions</span> — if you connect HireAll
           to a custom GPT, ChatGPT sends your search and tracking requests (authenticated with your
           API key) to our API. Your use of ChatGPT is also governed by OpenAI's own privacy policy.
         </li>
@@ -142,13 +142,13 @@
     <section class="flex flex-col gap-3">
       <h2 class="text-xl font-semibold tracking-tight">Browser extension</h2>
       <p class="text-sm leading-relaxed text-muted-foreground">
-        The freehire Chrome extension puts a job-application agent in a side panel next to whatever
+        The HireAll Chrome extension puts a job-application agent in a side panel next to whatever
         page you are on. It does nothing until you sign in from the panel.
       </p>
       <ul class="flex flex-col gap-3 text-sm leading-relaxed text-muted-foreground">
         <li>
           <span class="font-medium text-foreground">Session token.</span> Signing in stores your
-          freehire session token in <code class="font-mono text-foreground">chrome.storage.local</code
+          HireAll session token in <code class="font-mono text-foreground">chrome.storage.local</code
           >, scoped to your browser profile. Nothing else is stored there.
         </li>
         <li>
@@ -162,7 +162,7 @@
         </li>
         <li>
           <span class="font-medium text-foreground">Profile data for Autofill.</span> Filling an
-          application form sends the relevant fields from your freehire profile (name, email, phone,
+          application form sends the relevant fields from your HireAll profile (name, email, phone,
           CV fields) to the page; you review and submit yourself.
         </li>
       </ul>
@@ -180,7 +180,7 @@
         on, and switching it on for one CV does not affect any other.
       </p>
       <p class="text-sm leading-relaxed text-muted-foreground">
-        When it is on, the links in that CV's PDF point at freehire and forward to the real
+        When it is on, the links in that CV's PDF point at HireAll and forward to the real
         destination. Following one records the time, the browser and operating system family, the
         device type, and the host — not the full address — of the page the visitor came from. It
         also records a keyed hash of the visitor's IP address and browser identity, so that repeat

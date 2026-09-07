@@ -28,14 +28,14 @@
   const robots = $derived(listingRobots(data.initial?.total));
   const pageTitle = $derived(
     data.pageNumber > 1
-      ? `${data.company.name} — page ${data.pageNumber} · freehire`
+      ? `${data.company.name} — page ${data.pageNumber} · HireAll`
       : listingTitle,
   );
   const jsonLd = $derived(
     jsonLdScript([
       organizationJsonLd(data.company, origin),
       breadcrumbJsonLd([
-        { name: 'freehire', url: `${origin}/` },
+        { name: 'HireAll', url: `${origin}/` },
         { name: 'Companies', url: `${origin}/companies` },
         { name: data.company.name, url: base },
       ]),

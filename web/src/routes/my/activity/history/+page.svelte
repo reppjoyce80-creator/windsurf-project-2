@@ -3,7 +3,7 @@
 </script>
 
 <svelte:head>
-  <title>History — Activity — freehire</title>
+  <title>History — Activity — HireAll</title>
 </svelte:head>
 
 <JobHistory />

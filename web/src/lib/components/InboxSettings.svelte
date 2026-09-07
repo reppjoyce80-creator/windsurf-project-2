@@ -1,5 +1,5 @@
 <script lang="ts">
-  // The inbox's Settings pane: the freehire mailbox, the one source it still owns
+  // The inbox's Settings pane: the HireAll mailbox, the one source it still owns
   // (claim/release). It reports the outcome upward — the mail list, its filters and
   // its pager live in InboxView and stay there.
   //
@@ -59,7 +59,7 @@
 </script>
 
 <!-- Sources: the two ways to get mail in — Gmail (a status line, connected on
-     Integrations) and the freehire mailbox (owned here). -->
+     Integrations) and the HireAll mailbox (owned here). -->
 <div class="grid gap-3 sm:grid-cols-2">
   <!-- Gmail: status only — the connect/disconnect/sync UI lives on Integrations. -->
   <div class="rounded-xl border border-border bg-card p-4">
@@ -84,7 +84,7 @@
   <!-- Hosted mailbox -->
   <div class="rounded-xl border border-border bg-card p-4">
     <div class="flex items-center gap-2 text-sm font-medium">
-      <AtSign class="h-4 w-4 text-muted-foreground" /> freehire mailbox
+      <AtSign class="h-4 w-4 text-muted-foreground" /> HireAll mailbox
     </div>
     {#if hasMailbox}
       <div class="mt-1 flex items-center gap-1">
@@ -100,7 +100,7 @@
     {:else if mailbox?.available}
       <p class="mt-1 text-xs text-muted-foreground">Get an address on our domain — no Google needed.</p>
       <Button variant="primary" size="sm" class="mt-3" disabled={claiming} onclick={claimMailbox}>
-        {claiming ? 'Creating…' : 'Get a freehire mailbox'} <AtSign class="h-4 w-4" />
+        {claiming ? 'Creating…' : 'Get a HireAll mailbox'} <AtSign class="h-4 w-4" />
       </Button>
     {:else}
       <p class="mt-1 text-xs text-muted-foreground">Not available yet.</p>
@@ -110,7 +110,7 @@
 
 <ConfirmDialog
   bind:open={confirmReleaseMailboxOpen}
-  title="Release your freehire mailbox?"
+  title="Release your HireAll mailbox?"
   description="Its received mail is deleted."
   confirmLabel="Release"
   variant="destructive"

@@ -43,7 +43,7 @@
   import { setListSearchTarget } from '$lib/listSearch.svelte';
   import { track } from '$lib/analytics';
   import type { Job, FacetCounts } from '$lib/types';
-  import FilterSummary from './filters/FilterSummary.svelte';
+  import FilterBar from './filters/FilterBar.svelte';
   import FilterModal from './filters/FilterModal.svelte';
   import ListToolbar from './ListToolbar.svelte';
   import States from './States.svelte';
@@ -721,28 +721,29 @@
   </label>
 {/snippet}
 
-<div class="flex gap-6">
-  <aside class="hidden w-72 shrink-0 md:block">
-    <div class="sticky top-6 flex max-h-[calc(100vh-5rem)] flex-col gap-4 overflow-y-auto">
-      {#if !standalone && jobs.status === 'ready'}
-        <!-- Company view: the (filtered) open-job count as the sidebar's lead stat.
-             The inline count above the list is hidden on desktop (shown only on
-             mobile, where there's no sidebar), so it lives here instead. -->
-        <div class="rounded-xl border border-border bg-card px-4 py-3">
-          <p class="text-3xl font-semibold leading-none tracking-tight tabular-nums">
-            {listTotal.toLocaleString()}
-          </p>
-          <p class="mt-1 text-xs font-medium uppercase tracking-wide text-muted-foreground">
-            {listTotal === 1 ? 'open job' : 'open jobs'}
-          </p>
-        </div>
-      {/if}
-      {@render sidebarTop?.()}
-      <div class="rounded-xl border border-border bg-card p-4">
-        <FilterSummary store={filters} exclude={excludeFacets} onOpen={() => (modalOpen = true)} canSave={standalone} />
-      </div>
+<div class="flex flex-col gap-4">
+  {#if !standalone && jobs.status === 'ready'}
+    <!-- Company view: the (filtered) open-job count as a lead stat above the bar,
+         desktop only — ListToolbar's own mobile branch already shows the total
+         there regardless of `showDesktopTotal` (which this view leaves off), so
+         this is the one place it renders on a wide viewport now that the old
+         sidebar (its previous home) is gone. -->
+    <div class="hidden items-center gap-3 rounded-xl border border-border bg-card px-4 py-3 md:flex">
+      <p class="text-2xl font-semibold leading-none tracking-tight tabular-nums">
+        {listTotal.toLocaleString()}
+      </p>
+      <p class="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+        {listTotal === 1 ? 'open job' : 'open jobs'}
+      </p>
     </div>
-  </aside>
+  {/if}
+  {@render sidebarTop?.()}
+
+  <!-- The HiringCafe-style horizontal filter bar: a pill button per rail entry,
+       each opening a small dropdown bound to the live store (immediate apply, no
+       staged/Apply step). `onMore` opens the full modal — the mobile fallback,
+       and the way to reach anything the bar's own trigger doesn't cover. -->
+  <FilterBar store={filters} {counts} exclude={excludeFacets} onMore={() => (modalOpen = true)} />
 
   <div class="min-w-0 flex-1">
     <ListToolbar

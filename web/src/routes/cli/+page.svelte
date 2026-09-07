@@ -11,7 +11,7 @@
     jsonLdScript([
       cliApplicationJsonLd(origin, [CLI_REPO, MCP_REPO]),
       breadcrumbJsonLd([
-        { name: 'freehire', url: `${origin}/` },
+        { name: 'HireAll', url: `${origin}/` },
         { name: 'CLI', url: canonical },
       ]),
     ])
@@ -19,8 +19,8 @@
 </script>
 
 <Seo
-  title="freehire CLI & MCP — search and track jobs from the terminal"
-  description="A small Go CLI and an MCP server over the freehire job API, built so an AI agent or a script can search, open and track jobs — no browser. One API key drives both CLI and MCP."
+  title="HireAll CLI & MCP — search and track jobs from the terminal"
+  description="A small Go CLI and an MCP server over the HireAll job API, built so an AI agent or a script can search, open and track jobs — no browser. One API key drives both CLI and MCP."
   {canonical}
 />
 

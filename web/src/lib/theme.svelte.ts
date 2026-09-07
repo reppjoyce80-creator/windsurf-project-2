@@ -15,10 +15,10 @@ export type ThemeMode = 'light' | 'dark' | 'system';
 const mq = browser ? window.matchMedia('(prefers-color-scheme: dark)') : null;
 
 function readStored(): ThemeMode {
-  if (!browser) return 'system';
+  if (!browser) return 'light';
   const raw = localStorage.getItem(STORAGE_KEY);
   if (raw === 'light' || raw === 'dark' || raw === 'system') return raw;
-  return 'system';
+  return 'light';
 }
 
 function apply(mode: ThemeMode) {

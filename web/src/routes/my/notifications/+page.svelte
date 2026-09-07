@@ -51,7 +51,7 @@
 </script>
 
 <svelte:head>
-  <title>Notifications — freehire</title>
+  <title>Notifications — HireAll</title>
 </svelte:head>
 
 <div class="max-w-2xl">

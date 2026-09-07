@@ -100,13 +100,13 @@ function headlineBand(bands: InsightSalaryBand[]): InsightSalaryBand | null {
 export function salaryIntro(category: string, bands: InsightSalaryBand[]): string {
   const label = categoryLabel(category);
   const b = headlineBand(bands);
-  if (!b) return `Salary ranges for ${label} roles, aggregated from open postings on freehire.`;
+  if (!b) return `Salary ranges for ${label} roles, aggregated from open postings on HireAll.`;
   return `${label} roles pay a median of ${formatSalary(b.p50, b.currency)} per year across ${b.sample_size} postings that disclose pay, ranging from ${formatSalary(b.p25, b.currency)} to ${formatSalary(b.p75, b.currency)}.`;
 }
 
 export function skillsIntro(category: string, skills: InsightSkill[]): string {
   const label = categoryLabel(category);
-  if (skills.length === 0) return `The most in-demand skills for ${label} roles on freehire.`;
+  if (skills.length === 0) return `The most in-demand skills for ${label} roles on HireAll.`;
   const top = skills.slice(0, 3).map((s) => s.skill).join(', ');
   return `The most in-demand skills for ${label} roles right now are ${top} — ranked across ${skills.reduce((n, s) => n + s.open_count, 0)} open postings.`;
 }
@@ -114,6 +114,6 @@ export function skillsIntro(category: string, skills: InsightSkill[]): string {
 export function rolesIntro(category: string, roles: InsightRole[]): string {
   const label = categoryLabel(category);
   const total = roles.reduce((n, r) => n + r.open_count, 0);
-  if (total === 0) return `Open ${label} roles by seniority on freehire.`;
-  return `There are ${total} open ${label} roles on freehire right now, broken down by seniority and how fast each level is growing.`;
+  if (total === 0) return `Open ${label} roles by seniority on HireAll.`;
+  return `There are ${total} open ${label} roles on HireAll right now, broken down by seniority and how fast each level is growing.`;
 }

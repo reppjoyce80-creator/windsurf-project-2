@@ -3,7 +3,7 @@
 </script>
 
 <svelte:head>
-  <title>Contribute a board — freehire</title>
+  <title>Contribute a board — HireAll</title>
 </svelte:head>
 
 <!-- The account shell (my/+layout) owns the container, auth gate, and noindex;

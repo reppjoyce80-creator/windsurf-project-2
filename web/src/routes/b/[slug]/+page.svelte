@@ -16,8 +16,8 @@
   // contradict the noindex.
   const shareDescription = $derived(
     board.author_label
-      ? `A freehire job board shared by ${board.author_label}.`
-      : 'A curated tech job board on freehire.',
+      ? `A HireAll job board shared by ${board.author_label}.`
+      : 'A curated tech job board on HireAll.',
   );
 
   // A public board is read-only: page the board's stored query (kept fixed here — there is
@@ -35,7 +35,7 @@
   });
 </script>
 
-<Seo title={`${board.name} — freehire`} description={shareDescription} />
+<Seo title={`${board.name} — HireAll`} description={shareDescription} />
 <svelte:head>
   <!-- Share-by-link, not meant for search discovery (orthogonal to the OG card above). -->
   <meta name="robots" content="noindex" />

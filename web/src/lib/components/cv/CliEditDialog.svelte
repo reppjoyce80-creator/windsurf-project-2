@@ -3,8 +3,8 @@
   import { Dialog } from '$lib/ui';
 
   // Points a candidate's own coding agent at this CV, without teaching the reader
-  // the CLI's flags — an agent with the freehire-tailor-cv skill installed (ships
-  // in freehire-cli, see /cli) already knows the cv context/get/edit/render loop
+  // the CLI's flags — an agent with the HireAll-tailor-cv skill installed (ships
+  // in HireAll-cli, see /cli) already knows the cv context/get/edit/render loop
   // and the evidence rule; all it's missing is which CV. So the copyable text is
   // one prompt naming this CV's id, not the commands themselves.
   let { cvId, onClose }: { cvId: string; onClose: () => void } = $props();
@@ -14,7 +14,7 @@
     if (!open) onClose();
   });
 
-  const prompt = $derived(`Tailor my freehire CV (id ${cvId}) to this vacancy using the freehire CLI.`);
+  const prompt = $derived(`Tailor my HireAll CV (id ${cvId}) to this vacancy using the HireAll CLI.`);
 
   let copied = $state(false);
   let copyTimer: ReturnType<typeof setTimeout> | undefined;
@@ -33,7 +33,7 @@
 
 <Dialog bind:open title="Edit this CV from the CLI" class="sm:max-w-lg">
   <p class="text-sm leading-relaxed text-muted-foreground">
-    Give this to your own coding agent — with the freehire CLI installed and signed in, it reads
+    Give this to your own coding agent — with the HireAll CLI installed and signed in, it reads
     and writes this exact CV the same way the in-app assistant does.
   </p>
   <div class="mt-3 flex items-start gap-2 rounded-md border border-border bg-background/60 p-3 font-mono text-sm leading-relaxed">

@@ -115,7 +115,7 @@
 </script>
 
 <svelte:head>
-  <title>CV readiness — freehire</title>
+  <title>CV readiness — HireAll</title>
 </svelte:head>
 
 <!-- Run / Re-run AI review control, rendered inside the report's own section header

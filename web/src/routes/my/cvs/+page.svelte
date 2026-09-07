@@ -3,7 +3,7 @@
 </script>
 
 <svelte:head>
-  <title>CV builder — freehire</title>
+  <title>CV builder — HireAll</title>
 </svelte:head>
 
 <div class="max-w-3xl">

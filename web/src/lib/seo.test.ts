@@ -93,7 +93,7 @@ describe('collectionHeading', () => {
 
 describe('companyMetaDescription', () => {
   it('falls back to the generic template when no facts are present', () => {
-    expect(companyMetaDescription(company())).toBe('Open jobs at Acme, aggregated by freehire.');
+    expect(companyMetaDescription(company())).toBe('Open jobs at Acme, aggregated by HireAll.');
   });
 
   it('leads with the tagline and appends industries, headcount and HQ', () => {
@@ -106,18 +106,18 @@ describe('companyMetaDescription', () => {
           hq_country: 'us',
         })
       )
-    ).toBe('Rockets, on demand — Aerospace & Robotics, 250+ employees, United States. Open roles on freehire.');
+    ).toBe('Rockets, on demand — Aerospace & Robotics, 250+ employees, United States. Open roles on HireAll.');
   });
 
   it('prefers company_info.description over the tagline when no tagline is set', () => {
     expect(
       companyMetaDescription(company({ company_info: { description: 'Acme builds rockets.' } }))
-    ).toBe('Acme builds rockets. Open roles at Acme on freehire.');
+    ).toBe('Acme builds rockets. Open roles at Acme on HireAll.');
   });
 
   it('uses only the facts when there is no tagline or description', () => {
     expect(companyMetaDescription(company({ hq_country: 'de' }))).toBe(
-      'Acme: Germany. Open roles on freehire.'
+      'Acme: Germany. Open roles on HireAll.'
     );
   });
 
@@ -515,18 +515,18 @@ describe('jobPostingJsonLd', () => {
 
 describe('companyPageTitle', () => {
   it('states the open-role count, comma-grouped', () => {
-    expect(companyPageTitle('Amazon', 6531)).toBe('Amazon — 6,531 open jobs · freehire');
+    expect(companyPageTitle('Amazon', 6531)).toBe('Amazon — 6,531 open jobs · HireAll');
   });
 
   it('uses the singular for a lone opening', () => {
-    expect(companyPageTitle('Agiliway', 1)).toBe('Agiliway — 1 open job · freehire');
+    expect(companyPageTitle('Agiliway', 1)).toBe('Agiliway — 1 open job · HireAll');
   });
 
   // A company with nothing open, or whose count never arrived (the search call
   // failed), gets the plain title rather than a "0 open jobs" boast.
   it('falls back to the bare name without a usable count', () => {
-    expect(companyPageTitle('Acme', 0)).toBe('Acme · freehire');
-    expect(companyPageTitle('Acme', undefined)).toBe('Acme · freehire');
+    expect(companyPageTitle('Acme', 0)).toBe('Acme · HireAll');
+    expect(companyPageTitle('Acme', undefined)).toBe('Acme · HireAll');
   });
 });
 
@@ -693,7 +693,7 @@ describe('listingRobots', () => {
 });
 
 describe('companiesPageTitle', () => {
-  // "Companies · freehire" was 20 characters naming no subject — two thirds of the
+  // "Companies · HireAll" was 20 characters naming no subject — two thirds of the
   // SERP title width spent on the brand, and nothing a query could match.
   //
   // The comma grouping is asserted exactly because the helper pins 'en-US': this is
@@ -704,18 +704,18 @@ describe('companiesPageTitle', () => {
   // it would pass. Asserting the output rather than spying on the formatter is still
   // the right trade — the alternative tests the call, not the metadata.
   it('leads with the live count and the subject', () => {
-    expect(companiesPageTitle(294_021)).toBe('294,021 companies hiring in tech · freehire');
+    expect(companiesPageTitle(294_021)).toBe('294,021 companies hiring in tech · HireAll');
   });
 
   it('singularizes one company', () => {
-    expect(companiesPageTitle(1)).toBe('1 company hiring in tech · freehire');
+    expect(companiesPageTitle(1)).toBe('1 company hiring in tech · HireAll');
   });
 
   // A failed or empty search must not advertise "0 companies hiring in tech" — the
   // directory is still a real page, and the count is the decorative part.
   it('falls back to the plain subject with no usable count', () => {
-    expect(companiesPageTitle(undefined)).toBe('Companies hiring in tech · freehire');
-    expect(companiesPageTitle(0)).toBe('Companies hiring in tech · freehire');
+    expect(companiesPageTitle(undefined)).toBe('Companies hiring in tech · HireAll');
+    expect(companiesPageTitle(0)).toBe('Companies hiring in tech · HireAll');
   });
 });
 

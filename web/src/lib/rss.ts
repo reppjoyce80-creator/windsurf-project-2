@@ -30,9 +30,9 @@ export function blogRssXml(posts: PostMeta[], origin: string): string {
   return `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0">
   <channel>
-    <title>freehire blog</title>
+    <title>HireAll blog</title>
     <link>${escapeXml(`${origin}/blog`)}</link>
-    <description>Product updates and articles from freehire.</description>
+    <description>Product updates and articles from HireAll.</description>
 ${items}
   </channel>
 </rss>

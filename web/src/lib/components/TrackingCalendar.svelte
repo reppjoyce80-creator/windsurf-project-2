@@ -349,7 +349,7 @@
     {#if calendarConnected === false && connectAvailable}
       <!-- Said plainly rather than discovered at Google's consent screen. The OAuth app
            is not verified yet, so an account outside the test roster is simply refused
-           there — and a refusal with no explanation reads as a fault in freehire. The
+           there — and a refusal with no explanation reads as a fault in HireAll. The
            connect action itself lives on Integrations, alongside Mail and every other
            third-party connection, not inline here. -->
       <div class="rounded-lg border bg-card p-4">

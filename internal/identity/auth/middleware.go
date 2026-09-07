@@ -100,6 +100,15 @@ type TokenVersionLoader interface {
 // expired, invalid, or revoked token, and 503 on database infrastructure errors.
 func RequireAuth(iss *Issuer, versions TokenVersionLoader) fiber.Handler {
 	return func(c *fiber.Ctx) error {
+		// A request that already carries a resolved identity in locals -- set by
+		// EnsureGuestSession running earlier in this same request, the one path that can
+		// authenticate a caller before this middleware runs -- is trusted as-is. The
+		// ordinary case (nothing set it) is unaffected: UserID reports ok=false and this
+		// falls straight through to the cookie/key checks below, unchanged from before
+		// guest sessions existed.
+		if _, ok := UserID(c); ok {
+			return c.Next()
+		}
 		token := c.Cookies(CookieName)
 		if token == "" {
 			return fiber.NewError(fiber.StatusUnauthorized, "not authenticated")
@@ -129,6 +138,15 @@ func RequireAuth(iss *Issuer, versions TokenVersionLoader) fiber.Handler {
 // anonymous pass-through lets the handler redirect back with an error marker.
 func OptionalCookieAuth(iss *Issuer, versions TokenVersionLoader) fiber.Handler {
 	return func(c *fiber.Ctx) error {
+		// A request that already carries a resolved identity in locals -- set by
+		// EnsureGuestSession running earlier in this same request, the one path that can
+		// authenticate a caller before this middleware runs -- is trusted as-is. The
+		// ordinary case (nothing set it) is unaffected: UserID reports ok=false and this
+		// falls straight through to the cookie/key checks below, unchanged from before
+		// guest sessions existed.
+		if _, ok := UserID(c); ok {
+			return c.Next()
+		}
 		if token := c.Cookies(CookieName); token != "" {
 			if id, res, _ := resolveSession(c, iss, versions, token); res == sessionOK {
 				c.Locals(LocalsUserID, id)
@@ -202,6 +220,15 @@ func RequireAuthOrKey(iss *Issuer, versions TokenVersionLoader, keys APIKeyAuthe
 // a re-authentication loop it can never win.
 func RequireAuthOrScopedKey(iss *Issuer, versions TokenVersionLoader, keys APIKeyAuthenticator, allowed ...string) fiber.Handler {
 	return func(c *fiber.Ctx) error {
+		// A request that already carries a resolved identity in locals -- set by
+		// EnsureGuestSession running earlier in this same request, the one path that can
+		// authenticate a caller before this middleware runs -- is trusted as-is. The
+		// ordinary case (nothing set it) is unaffected: UserID reports ok=false and this
+		// falls straight through to the cookie/key checks below, unchanged from before
+		// guest sessions existed.
+		if _, ok := UserID(c); ok {
+			return c.Next()
+		}
 		if token := c.Cookies(CookieName); token != "" {
 			id, res, _ := resolveSession(c, iss, versions, token)
 			if res == sessionOK {
@@ -257,6 +284,15 @@ func scopeAllowed(scope string, allowed []string) bool {
 // (e.g. DB outage) return HTTP 503 so programmatic API clients receive actionable status.
 func OptionalAuth(iss *Issuer, versions TokenVersionLoader, keys APIKeyAuthenticator) fiber.Handler {
 	return func(c *fiber.Ctx) error {
+		// A request that already carries a resolved identity in locals -- set by
+		// EnsureGuestSession running earlier in this same request, the one path that can
+		// authenticate a caller before this middleware runs -- is trusted as-is. The
+		// ordinary case (nothing set it) is unaffected: UserID reports ok=false and this
+		// falls straight through to the cookie/key checks below, unchanged from before
+		// guest sessions existed.
+		if _, ok := UserID(c); ok {
+			return c.Next()
+		}
 		if token := c.Cookies(CookieName); token != "" {
 			if id, res, _ := resolveSession(c, iss, versions, token); res == sessionOK {
 				c.Locals(LocalsUserID, id)

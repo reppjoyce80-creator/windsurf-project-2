@@ -135,7 +135,7 @@ describe('actorLabel', () => {
   it('names each hand in the candidate’s own terms', () => {
     expect(actorLabel('candidate')).toBe('You');
     expect(actorLabel('agent')).toBe('Assistant');
-    expect(actorLabel('system')).toBe('freehire');
+    expect(actorLabel('system')).toBe('HireAll');
   });
 
   it('falls back to something readable for an actor it has not met', () => {

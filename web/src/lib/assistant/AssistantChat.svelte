@@ -45,7 +45,7 @@
   import { eventsFromTranscript, type TurnEvent } from '$lib/assistant/wire';
   import { opensInRail, type ChatPreset, type OpeningAction } from '$lib/assistant/presets';
 
-  // The agent chat. The agent runs inside the freehire backend, so this is an
+  // The agent chat. The agent runs inside the HireAll backend, so this is an
   // ordinary authenticated API surface: the session list, one session's stored
   // transcript, and a turn that streams its events over SSE. There is no
   // connection to hold, nothing to install, and no separate agent login.

@@ -14,8 +14,8 @@
 </script>
 
 <Seo
-  title="Terms of Service — freehire"
-  description="The terms for using freehire, the open-source IT job aggregator: your account, acceptable use, job listings, AI features, and liability."
+  title="Terms of Service — HireAll"
+  description="The terms for using HireAll, the open-source IT job aggregator: your account, acceptable use, job listings, AI features, and liability."
   {canonical}
 />
 
@@ -30,7 +30,7 @@
     </header>
 
     <p class="text-base leading-relaxed text-muted-foreground">
-      freehire (<a
+      HireAll (<a
         href="https://freehire.me"
         class="font-medium text-foreground underline-offset-4 hover:underline">freehire.me</a
       >), including our mobile app, is a free, open-source IT job aggregator. By using it, you

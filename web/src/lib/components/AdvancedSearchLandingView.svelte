@@ -129,7 +129,7 @@
     {
       n: '03',
       title: 'Get matches, not a feed',
-      body: "When a new job matches, freehire sends it the moment it's indexed. Nothing to refresh, nothing to remember to check.",
+      body: "When a new job matches, HireAll sends it the moment it's indexed. Nothing to refresh, nothing to remember to check.",
     },
   ];
 
@@ -153,7 +153,7 @@
         Role, seniority, stack, region, company type, salary currency, even whether a posting looks
         real — twenty filters, and almost every one can also mean <span class="text-foreground"
           >"not this."</span
-        > Build the search once, save it to your profile, and let freehire keep running it for you.
+        > Build the search once, save it to your profile, and let HireAll keep running it for you.
       </p>
       <div class="mt-9 flex flex-wrap items-center gap-3">
         <Button href={resolve('/jobs')} variant="primary" size="lg">Browse jobs</Button>
@@ -167,7 +167,7 @@
     <figure class="overflow-hidden rounded-xl border border-border bg-card shadow-sm">
       <figcaption class="flex items-center gap-2 border-b border-border px-4 py-2.5 text-xs text-muted-foreground">
         <span class="size-2.5 rounded-full bg-muted-foreground/30"></span>
-        freehire · Filters
+        HireAll · Filters
       </figcaption>
       <div class="flex flex-col gap-4 p-4 sm:p-5">
         {#each demoRows as row (row.label)}
@@ -337,7 +337,7 @@
         <code class="font-mono text-foreground">regions</code>,
         <code class="font-mono text-foreground">skills</code>,
         <code class="font-mono text-foreground">company_type</code> — is the same one the public API
-        and the freehire CLI use. Start from the live vocabulary, then filter from a script instead
+        and the HireAll CLI use. Start from the live vocabulary, then filter from a script instead
         of a browser tab.
       </p>
       <div class="rounded-lg border border-border bg-secondary/40 p-4">
@@ -345,7 +345,7 @@
           {#each cliCommands as row (row.cmd)}
             <div>
               <dt class="font-mono text-sm">
-                <span class="text-muted-foreground">freehire</span> {row.cmd}
+                <span class="text-muted-foreground">HireAll</span> {row.cmd}
               </dt>
               <dd class="text-sm leading-relaxed text-muted-foreground">{row.desc}</dd>
             </div>
@@ -379,7 +379,7 @@
     <div class="flex flex-col items-start gap-4 rounded-xl border border-border bg-secondary/40 p-6 sm:p-8">
       <h2 class="text-2xl font-semibold tracking-tight">Stop scrolling past the same noise.</h2>
       <p class="max-w-xl leading-relaxed text-muted-foreground">
-        Filter down to what you'd actually apply to, save it, and let freehire watch for the rest.
+        Filter down to what you'd actually apply to, save it, and let HireAll watch for the rest.
       </p>
       <div class="flex flex-wrap gap-3">
         <Button href={resolve('/jobs')} variant="primary" size="lg">Browse jobs</Button>

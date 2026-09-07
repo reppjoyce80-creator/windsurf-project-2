@@ -106,9 +106,9 @@
       .join(''),
   );
 
-  const pageTitle = $derived(`${heading} — freehire Talent Network`);
+  const pageTitle = $derived(`${heading} — HireAll Talent Network`);
   const description = $derived(
-    cv.headline || 'A candidate profile shared via freehire’s Talent Network.',
+    cv.headline || 'A candidate profile shared via HireAll’s Talent Network.',
   );
 
   // A work/education entry's date range, printed as the CV wrote it ("2021 — Present").

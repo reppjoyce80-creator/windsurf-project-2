@@ -23,21 +23,21 @@
     data.pageNumber > 1 ? `${origin}/companies?page=${data.pageNumber}` : `${origin}/companies`
   );
   const description =
-    'Browse companies hiring in tech, with their current open roles — aggregated by freehire.';
+    'Browse companies hiring in tech, with their current open roles — aggregated by HireAll.';
   // A filter combination nothing matches is a real page that should not be indexed;
   // `pageExists` already 404s a page number past the end, so this only ever fires on
   // page 1 of an empty result set.
   const robots = $derived(listingRobots(data.initial.total));
   // The number belongs in the title too, or every page advertises itself as the same
   // one. Mirrors the job feed. Page 1 leads with the live count and the subject —
-  // see companiesPageTitle for why the bare "Companies · freehire" was a waste.
+  // see companiesPageTitle for why the bare "Companies · HireAll" was a waste.
   const title = $derived(
     data.pageNumber > 1
-      ? `Companies — page ${data.pageNumber} · freehire`
+      ? `Companies — page ${data.pageNumber} · HireAll`
       : companiesPageTitle(data.initial.total)
   );
   // Structured data for the directory: a CollectionPage wrapping the server-rendered
-  // first page of companies as an ItemList, plus a breadcrumb (freehire → Companies),
+  // first page of companies as an ItemList, plus a breadcrumb (HireAll → Companies),
   // mirroring the collection landings. The list follows the active filters, so a
   // deep-linked filtered URL describes what it actually shows.
   const jsonLd = $derived(
@@ -49,7 +49,7 @@
         companyListItems(data.initial.items, origin)
       ),
       breadcrumbJsonLd([
-        { name: 'freehire', url: `${origin}/` },
+        { name: 'HireAll', url: `${origin}/` },
         { name: 'Companies', url: canonical },
       ]),
     ])

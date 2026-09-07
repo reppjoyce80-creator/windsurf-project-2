@@ -82,7 +82,7 @@ export function actorLabel(actor: string): string {
     case 'agent':
       return 'Assistant';
     case 'system':
-      return 'freehire';
+      return 'HireAll';
     default:
       return actor;
   }

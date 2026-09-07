@@ -8,37 +8,37 @@
   const INSTALL = 'curl -fsSL https://freehire.me/install.sh | sh';
 
   // Agent skills, one per task rather than one per tool, so a host loads what the
-  // question needs instead of the whole surface. Mirrors freehire-cli's skills/
+  // question needs instead of the whole surface. Mirrors HireAll-cli's skills/
   // directory; the plugin ships each one's slash command alongside it.
   const skills = [
     {
-      name: 'freehire-job-search',
+      name: 'HireAll-job-search',
       slash: '/job-search',
       desc: 'Read the saved profile, ground every filter in facets, search, and shortlist.',
     },
     {
-      name: 'freehire-track-applications',
+      name: 'HireAll-track-applications',
       slash: '/track-applications',
       desc: 'Where each application stands, stage moves, and reporting one that never answered.',
     },
     {
-      name: 'freehire-market-fit',
+      name: 'HireAll-market-fit',
       slash: '/market-fit',
       desc: 'Score a stack against live vacancy demand and put a number on every gap.',
     },
     {
-      name: 'freehire-tailor-cv',
+      name: 'HireAll-tailor-cv',
       slash: '/tailor-cv',
       desc: 'Reframe a CV toward one vacancy — every claim cited, nothing invented.',
     },
     {
-      name: 'freehire-mail-triage',
+      name: 'HireAll-mail-triage',
       slash: '/triage-inbox',
       desc: 'Push a mail batch, judge each message, and drain the two link queues.',
     },
   ];
 
-  // Command reference, mirroring the freehire-cli README/SKILL.md (the source of
+  // Command reference, mirroring the HireAll-cli README/SKILL.md (the source of
   // truth). Discover the market and its jobs first, then track your interaction.
   const discover = [
     { cmd: 'facets', desc: "Every filter's live values + counts — the vocabulary to filter by." },
@@ -60,7 +60,7 @@
     { cmd: 'profile', desc: 'Your saved search profile — skills, seniority, regions.' },
   ];
 
-  // Application mail. The whole inbox surface is here because freehire fetches
+  // Application mail. The whole inbox surface is here because HireAll fetches
   // nothing on this tier: your own client does, and `inbox push` hands it over.
   const inbox = [
     { cmd: 'inbox push --file mail.json', desc: 'Upload a batch your own client fetched (keyed by Message-ID, so a re-sync updates instead of duplicating).' },
@@ -72,7 +72,7 @@
 
   // Widening the catalogue, and the moderator queue behind it.
   const contribute = [
-    { cmd: 'contribute <url>', desc: "Hand freehire a job link; a board we don't track yet gets added and crawled." },
+    { cmd: 'contribute <url>', desc: "Hand HireAll a job link; a board we don't track yet gets added and crawled." },
     { cmd: 'contributions', desc: "The boards you've contributed and their state." },
     { cmd: 'submissions', desc: 'Jobs you submitted; the review queue with pending/approve/reject (moderator).' },
     { cmd: 'jobs add | edit <slug>', desc: 'Create or edit a job posting (moderator).' },
@@ -100,7 +100,7 @@
   <section class="grid-bg relative -mx-4 px-4 pb-16 pt-12 sm:pt-16">
     <div class="grid items-center gap-12 lg:grid-cols-[1.05fr_0.95fr]">
       <div>
-        <SectionLabel text="freehire on the command line" class="reveal" style="--d:0ms" />
+        <SectionLabel text="HireAll on the command line" class="reveal" style="--d:0ms" />
 
         <h1
           class="reveal mt-6 max-w-2xl text-balance text-4xl font-semibold leading-[0.98] tracking-tighter sm:text-6xl"
@@ -110,7 +110,7 @@
         </h1>
 
         <p class="reveal mt-7 max-w-xl text-lg leading-relaxed text-muted-foreground" style="--d:160ms">
-          <code class="font-mono text-foreground">freehire</code> is a small CLI — and an
+          <code class="font-mono text-foreground">HireAll</code> is a small CLI — and an
           <a href="#mcp" class="text-foreground underline-offset-4 hover:underline">MCP server</a> — over the
           same job API the site runs on. One <span class="text-foreground">API key</span> lets an
           <span class="text-foreground">AI agent</span> or a script search and open jobs, track
@@ -159,11 +159,11 @@
 curl -fsSL <span class="text-foreground">https://freehire.me/install.sh</span> | sh
 
 <span class="text-muted-foreground"># authenticate once (key from /my/api-keys)</span>
-freehire auth login --token <span class="text-foreground">fhk_…</span>
+HireAll auth login --token <span class="text-foreground">fhk_…</span>
 
 <span class="text-muted-foreground"># discover the market, then search</span>
-freehire facets
-freehire search <span class="text-foreground">"golang"</span> --remote --region eu</pre>
+HireAll facets
+HireAll search <span class="text-foreground">"golang"</span> --remote --region eu</pre>
       </figure>
     </div>
   </section>
@@ -178,7 +178,7 @@ freehire search <span class="text-foreground">"golang"</span> --remote --region 
           {#each discover as row (row.cmd)}
             <div>
               <dt class="font-mono text-sm">
-                <span class="text-muted-foreground">freehire</span> {row.cmd}
+                <span class="text-muted-foreground">HireAll</span> {row.cmd}
               </dt>
               <dd class="text-sm leading-relaxed text-muted-foreground">{row.desc}</dd>
             </div>
@@ -193,7 +193,7 @@ freehire search <span class="text-foreground">"golang"</span> --remote --region 
           {#each track as row (row.cmd)}
             <div>
               <dt class="font-mono text-sm">
-                <span class="text-muted-foreground">freehire</span> {row.cmd}
+                <span class="text-muted-foreground">HireAll</span> {row.cmd}
               </dt>
               <dd class="text-sm leading-relaxed text-muted-foreground">{row.desc}</dd>
             </div>
@@ -208,7 +208,7 @@ freehire search <span class="text-foreground">"golang"</span> --remote --region 
           {#each inbox as row (row.cmd)}
             <div>
               <dt class="font-mono text-sm">
-                <span class="text-muted-foreground">freehire</span> {row.cmd}
+                <span class="text-muted-foreground">HireAll</span> {row.cmd}
               </dt>
               <dd class="text-sm leading-relaxed text-muted-foreground">{row.desc}</dd>
             </div>
@@ -223,7 +223,7 @@ freehire search <span class="text-foreground">"golang"</span> --remote --region 
           {#each contribute as row (row.cmd)}
             <div>
               <dt class="font-mono text-sm">
-                <span class="text-muted-foreground">freehire</span> {row.cmd}
+                <span class="text-muted-foreground">HireAll</span> {row.cmd}
               </dt>
               <dd class="text-sm leading-relaxed text-muted-foreground">{row.desc}</dd>
             </div>
@@ -233,7 +233,7 @@ freehire search <span class="text-foreground">"golang"</span> --remote --region 
     </div>
 
     <p class="mt-8 max-w-2xl text-sm leading-relaxed text-muted-foreground">
-      Start from <code class="font-mono text-foreground">freehire facets</code> — it lists every filter's live
+      Start from <code class="font-mono text-foreground">HireAll facets</code> — it lists every filter's live
       values so <code class="font-mono text-foreground">search</code> and
       <code class="font-mono text-foreground">market-fit</code> use real values, not guesses. Everything you
       save, apply to and stage shows up on your
@@ -259,10 +259,10 @@ freehire search <span class="text-foreground">"golang"</span> --remote --region 
         knows which is which.
       </p>
       <pre
-        class="mt-3 overflow-x-auto rounded-md border border-border bg-background/60 p-3 font-mono text-sm leading-relaxed"><span class="text-muted-foreground">freehire</span> cv context &lt;id&gt;        <span class="text-muted-foreground"># the match analysis to reframe toward</span>
-<span class="text-muted-foreground">freehire</span> cv get &lt;id&gt;            <span class="text-muted-foreground"># the CV document as JSON</span>
-<span class="text-muted-foreground">freehire</span> cv edit &lt;id&gt; --set …   <span class="text-muted-foreground"># one edit by path (--ops for a batch)</span>
-<span class="text-muted-foreground">freehire</span> cv render &lt;id&gt; --out cv.pdf</pre>
+        class="mt-3 overflow-x-auto rounded-md border border-border bg-background/60 p-3 font-mono text-sm leading-relaxed"><span class="text-muted-foreground">HireAll</span> cv context &lt;id&gt;        <span class="text-muted-foreground"># the match analysis to reframe toward</span>
+<span class="text-muted-foreground">HireAll</span> cv get &lt;id&gt;            <span class="text-muted-foreground"># the CV document as JSON</span>
+<span class="text-muted-foreground">HireAll</span> cv edit &lt;id&gt; --set …   <span class="text-muted-foreground"># one edit by path (--ops for a batch)</span>
+<span class="text-muted-foreground">HireAll</span> cv render &lt;id&gt; --out cv.pdf</pre>
     </div>
   </section>
 
@@ -273,21 +273,21 @@ freehire search <span class="text-foreground">"golang"</span> --remote --region 
       <div>
         <h2 class="text-2xl font-semibold tracking-tight">Same key, any AI host</h2>
         <p class="mt-4 max-w-md leading-relaxed text-muted-foreground">
-          <code class="font-mono text-foreground">freehire-mcp</code> exposes the same search, market-fit and
+          <code class="font-mono text-foreground">HireAll-mcp</code> exposes the same search, market-fit and
           tracking tools over the
           <a
             href="https://modelcontextprotocol.io"
             target="_blank"
             rel="noopener noreferrer"
             class="text-foreground underline-offset-4 hover:underline">Model Context Protocol</a
-          > — so Claude Desktop, Claude Code or any MCP host can drive freehire directly. It runs via
+          > — so Claude Desktop, Claude Code or any MCP host can drive HireAll directly. It runs via
           <code class="font-mono text-foreground">npx</code>; no global install.
         </p>
         <p class="mt-4 max-w-md text-sm leading-relaxed text-muted-foreground">
           It shares the CLI's credentials: if you've run
-          <code class="font-mono text-foreground">freehire auth login</code>, omit
+          <code class="font-mono text-foreground">HireAll auth login</code>, omit
           <code class="font-mono text-foreground">env</code> and it reads
-          <code class="font-mono text-foreground">~/.freehire/creds.json</code>.
+          <code class="font-mono text-foreground">~/.HireAll/creds.json</code>.
         </p>
         <div class="mt-6">
           <Button href={MCP_REPO} target="_blank" rel="noopener noreferrer" variant="outline" size="md">
@@ -306,10 +306,10 @@ freehire search <span class="text-foreground">"golang"</span> --remote --region 
         </figcaption>
         <pre class="overflow-x-auto p-4 leading-relaxed">{`{
   "mcpServers": {
-    "freehire": {
+    "HireAll": {
       "command": "npx",
-      "args": ["-y", "freehire-mcp"],
-      "env": { "FREEHIRE_TOKEN": "fhk_…" }
+      "args": ["-y", "HireAll-mcp"],
+      "env": { "HIREALL_TOKEN": "fhk_…" }
     }
   }
 }`}</pre>
@@ -340,7 +340,7 @@ freehire search <span class="text-foreground">"golang"</span> --remote --region 
         </p>
         <pre
           class="mt-5 max-w-md overflow-x-auto rounded-lg border border-border bg-secondary/60 p-3 font-mono text-sm leading-relaxed">/plugin marketplace add strelov1/freehire-cli
-/plugin install freehire@freehire-cli</pre>
+/plugin install HireAll@HireAll-cli</pre>
         <p class="mt-4 max-w-md text-sm leading-relaxed text-muted-foreground">
           Every command takes <code class="font-mono text-foreground">--json</code> for the raw API
           payload — results to <span class="font-mono text-foreground">stdout</span>, errors to
@@ -374,8 +374,8 @@ freehire search <span class="text-foreground">"golang"</span> --remote --region 
       With the <code class="font-mono text-foreground">moderator</code> role you can author postings:
     </p>
     <pre
-      class="mt-4 max-w-2xl overflow-x-auto rounded-lg border border-border bg-secondary/60 p-3 font-mono text-sm leading-relaxed">freehire jobs add --url &lt;url&gt; --title "Senior Go Developer" --company Acme
-freehire jobs edit &lt;slug&gt; --title "Staff Go Developer"</pre>
+      class="mt-4 max-w-2xl overflow-x-auto rounded-lg border border-border bg-secondary/60 p-3 font-mono text-sm leading-relaxed">HireAll jobs add --url &lt;url&gt; --title "Senior Go Developer" --company Acme
+HireAll jobs edit &lt;slug&gt; --title "Staff Go Developer"</pre>
   </section>
 
   <!-- Free / open-source / transparent — the project's promise, with the source. -->

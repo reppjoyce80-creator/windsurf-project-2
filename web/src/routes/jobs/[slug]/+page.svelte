@@ -27,8 +27,8 @@
   const description = $derived(
     metaDescription(data.job.description) ||
       (data.job.company
-        ? `${data.job.title} at ${data.job.company} — apply on freehire.`
-        : `${data.job.title} — apply on freehire.`)
+        ? `${data.job.title} at ${data.job.company} — apply on HireAll.`
+        : `${data.job.title} — apply on HireAll.`)
   );
   const jsonLd = $derived(
     jsonLdScript([
@@ -41,7 +41,7 @@
       // URL. If the feed ever gets its own page again, this is where the level
       // returns.
       breadcrumbJsonLd([
-        { name: 'freehire', url: `${origin}/` },
+        { name: 'HireAll', url: `${origin}/` },
         { name: data.job.title, url: canonical },
       ]),
     ])

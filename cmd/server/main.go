@@ -24,6 +24,7 @@ import (
 	"github.com/strelov1/freehire/internal/candidate/matchanalysis"
 	"github.com/strelov1/freehire/internal/candidate/pii"
 	appleauth "github.com/strelov1/freehire/internal/identity/auth/apple"
+	"github.com/strelov1/freehire/internal/platform/db"
 	"github.com/strelov1/freehire/internal/identity/auth/oauth"
 	"github.com/strelov1/freehire/internal/platform/blobstore"
 	"github.com/strelov1/freehire/internal/platform/cache"
@@ -289,6 +290,7 @@ func main() {
 		JWTTTL:                      cfg.JWTTTL,
 		CookieSecure:                cfg.CookieSecure,
 		CookieDomains:               cfg.CookieDomains,
+		GuestSessionTTL:             cfg.GuestSessionTTL,
 		OAuthRegistry:               oauthRegistry,
 		AuthV2Enabled:               cfg.AuthV2Enabled,
 		MobileAuthCallbacks:         cfg.MobileAuthCallbacks,
@@ -339,6 +341,36 @@ func main() {
 		}
 	}()
 	log.Printf("hire listening on :%s", cfg.Port)
+
+	// Guest-account cleanup is what actually enforces guest_expires_at (see
+	// auth.EnsureGuestSession): ON DELETE CASCADE across the FK web every
+	// user-owned table declares back to users.id does the rest in the same
+	// DELETE, so nothing else has to know a guest ever existed once its row is
+	// gone. This runs inline as a ticker rather than as one of the cmd/*
+	// worker binaries (see cmd/auth-cleanup) because none of those are
+	// scheduled in this deployment — cmd/server is the only process that runs
+	// continuously, so it is the only place a periodic sweep can live without
+	// adding a scheduler this deployment does not have.
+	go func() {
+		ticker := time.NewTicker(cfg.GuestCleanupInterval)
+		defer ticker.Stop()
+		queries := db.New(pool)
+		for {
+			select {
+			case <-ctx.Done():
+				return
+			case <-ticker.C:
+				n, err := queries.DeleteExpiredGuests(ctx)
+				if err != nil {
+					log.Printf("guest cleanup: %v", err)
+					continue
+				}
+				if n > 0 {
+					log.Printf("guest cleanup: reaped %d expired guest account(s)", n)
+				}
+			}
+		}
+	}()
 
 	observability.StartMetricsServer(cfg.MetricsPort)
 

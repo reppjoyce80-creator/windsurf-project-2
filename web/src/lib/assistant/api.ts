@@ -1,4 +1,4 @@
-// Fetch helpers for the assistant. The agent now runs inside the freehire
+// Fetch helpers for the assistant. The agent now runs inside the HireAll
 // backend, so everything is same-origin under `/api/v1/assistant` and the session
 // cookie authenticates it — there is no separate agent service, no cross-origin
 // WebSocket, and no credential to hand anywhere.

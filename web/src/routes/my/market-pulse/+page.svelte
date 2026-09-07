@@ -106,7 +106,7 @@
 </script>
 
 <svelte:head>
-  <title>Market pulse — freehire</title>
+  <title>Market pulse — HireAll</title>
 </svelte:head>
 
 <!-- The account shell (my/+layout) owns the container, auth gate, and noindex. -->

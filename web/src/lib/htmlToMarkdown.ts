@@ -44,7 +44,7 @@ function inline(node: Node): string {
 // Block-level tags SanitizeHTML allows. Anything else — bare text, `<br>`, `strong`/`em`/
 // `code`/`span`/`u` sitting directly among block siblings with no wrapping `<p>` — is
 // inline content and is accumulated into the paragraph being built instead of being
-// dropped (a real ATS description can carry a stray text node freehire's own sanitizer
+// dropped (a real ATS description can carry a stray text node HireAll's own sanitizer
 // never forces into a block).
 const BLOCK_TAGS = new Set([
   'h1', 'h2', 'h3', 'h4', 'h5', 'h6',

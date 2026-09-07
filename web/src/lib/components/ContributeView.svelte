@@ -25,7 +25,7 @@
   const status = $derived(contribData.status);
   const contributions = $derived(contribData.value);
 
-  // Discord: same reward, a second surface — running `/contribute` from the freehire
+  // Discord: same reward, a second surface — running `/contribute` from the HireAll
   // Discord server instead of pasting a link here. Linking/unlinking the account lives
   // on Integrations now, alongside every other third-party connection; this is a
   // status line only.
@@ -96,8 +96,8 @@
           </span>
           <span class="text-xs text-muted-foreground">
             {discord.linked
-              ? 'Run /contribute in the freehire Discord server for the same reward.'
-              : 'Link your account to run /contribute in the freehire Discord server for the same reward.'}
+              ? 'Run /contribute in the HireAll Discord server for the same reward.'
+              : 'Link your account to run /contribute in the HireAll Discord server for the same reward.'}
           </span>
         </div>
         <Button variant="secondary" size="sm" href={resolve('/my/integrations')}>

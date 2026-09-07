@@ -10,7 +10,7 @@
 </script>
 
 <Seo
-  title="Collections · freehire"
+  title="Collections · HireAll"
   description="Curated collections of open tech jobs — Y Combinator–backed companies, Big Tech, and more."
   {canonical}
 />

@@ -412,3 +412,36 @@ WHERE id = $1;
 UPDATE users
 SET experience_require_context = $2
 WHERE id = $1;
+
+-- name: CreateGuestUser :one
+-- Provision a disposable guest account: a synthetic, guaranteed-unique email (the
+-- handler mints "guest-<uuid>@guest.invalid" -- guests never sign in by password, so
+-- the address only has to satisfy the NOT NULL UNIQUE constraint, never a mailbox),
+-- is_guest true, and guest_expires_at stamped by the caller (EnsureGuestSession, from
+-- the configured guest TTL). token_version starts at its column default (1), so the
+-- very first token minted for this row is born valid with no extra read.
+INSERT INTO users (email, is_guest, guest_expires_at)
+VALUES ($1, true, $2)
+RETURNING id;
+
+-- name: GetUserSessionState :one
+-- What EnsureGuestSession needs to decide whether a presented cookie is still live:
+-- the account's current token generation (the same revocation check every other auth
+-- path makes against GetUserTokenVersion) plus whether this is a guest account and,
+-- if so, when it expires. A guest whose guest_expires_at has passed reads as gone here
+-- even in the small window before the cleanup sweep (DeleteExpiredGuests) actually
+-- deletes the row, so an expiring guest can never be treated as live for longer than
+-- its own TTL just because the sweep hasn't run yet.
+SELECT token_version, is_guest, guest_expires_at
+FROM users
+WHERE id = $1;
+
+-- name: DeleteExpiredGuests :execrows
+-- The cleanup sweep: reap every guest account whose guest_expires_at has passed.
+-- ON DELETE CASCADE across the FK web every user-owned table declares back to
+-- users.id (see DeleteUser above) does the rest in this same statement -- applied
+-- jobs, saved searches, tracking rows, everything the guest touched disappears with
+-- the account. Never matches a non-guest row: guest_expires_at is NULL for every
+-- real account, and NULL < now() is never true.
+DELETE FROM users
+WHERE is_guest = true AND guest_expires_at < now();

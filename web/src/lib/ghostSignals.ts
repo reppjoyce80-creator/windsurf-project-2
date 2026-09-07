@@ -36,7 +36,7 @@ const EXPLAINERS: Record<string, { fact: string; gist: string; why: string }> = 
   evergreen_posting: {
     fact: 'Open 240 days · reposted 13× · 7 copies open at once',
     gist: "The same job posted over and over, often with several copies live at once. Age on its own never triggers it — hard senior roles stay open a long time.",
-    why: 'One role advertised over and over, often with several copies live at the same time. It never fires on age alone — a genuinely hard senior role stays open a long time. Age is measured from when freehire first saw the posting, not from the date the source prints, so refreshing that date does not reset it.',
+    why: 'One role advertised over and over, often with several copies live at the same time. It never fires on age alone — a genuinely hard senior role stays open a long time. Age is measured from when HireAll first saw the posting, not from the date the source prints, so refreshing that date does not reset it.',
   },
   ats_absent: {
     fact: "Not on the company's own careers board · checked 2 days ago",
@@ -44,8 +44,8 @@ const EXPLAINERS: Record<string, { fact: string; gist: string; why: string }> = 
     why: "The posting reached us through an aggregator, and the same role is not on the employer's own board. It only counts where we actually crawl that board — otherwise absence would report our blind spot as the employer's fault. The check is re-run continuously and expires if it stops, so a stale answer goes quiet instead of standing.",
   },
   silent_applications: {
-    fact: 'Applications through freehire went unanswered past their follow-up window',
-    gist: 'People applied through freehire and got no answer in the time their stage allows. Only counted when a mailbox is connected, so a reply would have been seen.',
+    fact: 'Applications through HireAll went unanswered past their follow-up window',
+    gist: 'People applied through HireAll and got no answer in the time their stage allows. Only counted when a mailbox is connected, so a reply would have been seen.',
     why: 'People who applied here, whose mailbox is connected so a reply would have been seen, and who were not answered within the window their stage tolerates. Without a connected mailbox we could not tell silence from a gap in our data, so those applications are not counted at all.',
   },
   user_reports: {

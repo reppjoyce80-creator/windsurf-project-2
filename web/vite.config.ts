@@ -69,8 +69,8 @@ export default defineConfig({
         // Name/description echo the WebSite JSON-LD copy in src/lib/seo.ts
         // (SITE_DESCRIPTION) — same product description, not re-derived from it,
         // since a build-config file has no access to the $lib alias.
-        name: 'freehire — the open-source search engine for every job',
-        short_name: 'freehire',
+        name: 'HireAll — the open-source search engine for every job',
+        short_name: 'HireAll',
         description:
           'An open-source search engine for tech jobs: millions of openings indexed straight from company career boards, deduplicated and tagged with stack, seniority and location.',
         start_url: '/',

@@ -1,9 +1,10 @@
 <script lang="ts">
   import { navigating, page, updated } from '$app/state';
-  import { afterNavigate, beforeNavigate } from '$app/navigation';
+  import { afterNavigate, beforeNavigate, invalidateAll } from '$app/navigation';
   import { onMount } from 'svelte';
   import { initTheme } from '$lib/theme.svelte';
   import { isAuthenticated } from '$lib/auth.svelte';
+  import { api } from '$lib/api';
   import { resetUserStores } from '$lib/userResource.svelte';
   import {
     capturePageview,
@@ -14,7 +15,6 @@
   } from '$lib/analytics';
   import TopBar from '$lib/components/TopBar.svelte';
   import ProductHuntBanner from '$lib/components/ProductHuntBanner.svelte';
-  import EmailVerificationBanner from '$lib/components/EmailVerificationBanner.svelte';
   import Footer from '$lib/components/Footer.svelte';
   import CookieConsent from '$lib/components/CookieConsent.svelte';
   import ConfirmTailorDialog from '$lib/components/ConfirmTailorDialog.svelte';
@@ -41,6 +41,28 @@
   onMount(() => {
     initTheme();
     registerPwaServiceWorker();
+  });
+
+  // Guest sessions: the backend hands every visitor a disposable account the
+  // instant any /api/v1 request reaches it (see auth.EnsureGuestSession), but the
+  // very first paint of a brand-new tab predates that -- `page.data.user` (resolved
+  // server-side before this component ever mounts) can still read null for a beat.
+  // One lightweight client call closes that gap: it reaches the backend directly
+  // (relative URL, the browser's own cookie jar -- see $lib/api's `api` export),
+  // which mints the guest and sets its cookie, and invalidateAll() re-resolves
+  // `page.data.user` from it -- the same pattern login()/logout() already use to
+  // reflect an auth change without a full reload. A no-op once a session exists
+  // (isAuthenticated() is already true) and on every navigation after the first.
+  onMount(() => {
+    if (!isAuthenticated()) {
+      void api
+        .me()
+        .then(() => invalidateAll())
+        .catch(() => {
+          // Best-effort: a failed bootstrap just leaves this tab signed out for one
+          // more navigation, exactly like any other failed /me call today.
+        });
+    }
   });
 
   // hooks.server.ts sets `<html lang>` on the initial SSR response, but a live
@@ -155,9 +177,6 @@
 <div class="flex min-h-svh flex-col">
   <TopBar />
 
-  <!-- Self-gating: renders only for a signed-in, unverified account. -->
-  <EmailVerificationBanner />
-
   <!-- Self-gating: renders until the Product Hunt launch day is over, unless
        dismissed. Below the verification prompt on purpose — a promo strip must not
        push a security notice further from the header. -->
@@ -188,7 +207,7 @@
 
 <ConfirmDialog
   bind:open={showReloadPrompt}
-  title="A new version of freehire is available"
+  title="A new version of HireAll is available"
   confirmLabel="Reload now"
   onConfirm={reloadForUpdate}
 />

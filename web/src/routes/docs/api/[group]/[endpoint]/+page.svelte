@@ -9,7 +9,7 @@
 </script>
 
 <Seo
-  title={`${data.endpoint.method} ${data.endpoint.path} — freehire API`}
+  title={`${data.endpoint.method} ${data.endpoint.path} — HireAll API`}
   description={data.endpoint.summary}
   {canonical}
 />

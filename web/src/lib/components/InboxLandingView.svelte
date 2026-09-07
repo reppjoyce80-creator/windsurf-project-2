@@ -62,7 +62,7 @@
     {
       n: '01',
       title: 'Only the mail you point at us',
-      body: 'The freehire address receives what you forward and what employers reply to — nothing else. Connect Gmail instead and the sync is read-only and scoped to job mail: freehire learns which senders write about your applications and leaves the rest of your mailbox alone.',
+      body: 'The HireAll address receives what you forward and what employers reply to — nothing else. Connect Gmail instead and the sync is read-only and scoped to job mail: HireAll learns which senders write about your applications and leaves the rest of your mailbox alone.',
     },
     {
       n: '02',
@@ -72,7 +72,7 @@
     {
       n: '03',
       title: 'Leave whenever, in one click',
-      body: 'Disconnect Gmail and the sync stops. Release the freehire address and it stops receiving. Delete a message and it stays deleted — a later re-sync will not resurrect it, because read, deleted and triaged are your state, not the mail server’s.',
+      body: 'Disconnect Gmail and the sync stops. Release the HireAll address and it stops receiving. Delete a message and it stays deleted — a later re-sync will not resurrect it, because read, deleted and triaged are your state, not the mail server’s.',
     },
     {
       n: '04',
@@ -114,7 +114,7 @@
     <figure class="overflow-hidden rounded-xl border border-border bg-card shadow-sm">
       <figcaption class="flex items-center gap-2 border-b border-border px-4 py-2.5 text-xs text-muted-foreground">
         <span class="size-2.5 rounded-full bg-muted-foreground/30"></span>
-        freehire · Inbox
+        HireAll · Inbox
       </figcaption>
       <ul class="divide-y divide-border">
         {#each mail as m (m.subject)}
@@ -154,7 +154,7 @@
       <div class="flex flex-col gap-4 rounded-xl border border-border bg-secondary/40 p-6">
         <div class="flex flex-col gap-1">
           <span class="font-mono text-sm text-muted-foreground">Recommended</span>
-          <h3 class="text-lg font-semibold tracking-tight">Claim a freehire address</h3>
+          <h3 class="text-lg font-semibold tracking-tight">Claim a HireAll address</h3>
         </div>
         <p class="text-sm leading-relaxed text-muted-foreground">
           You get an address like <code
@@ -170,7 +170,7 @@
           <h3 class="text-lg font-semibold tracking-tight">Connect Gmail, read-only</h3>
         </div>
         <p class="text-sm leading-relaxed text-muted-foreground">
-          Sign in with Google once and freehire syncs the job-related mail it finds — it learns the
+          Sign in with Google once and HireAll syncs the job-related mail it finds — it learns the
           senders that write about your applications rather than reading your whole mailbox.
           Disconnecting stops the sync immediately. Google is still reviewing the app, so this route
           is open to test users for now.
@@ -303,10 +303,10 @@
           Bring your own mail client.
         </h2>
         <p class="mt-5 max-w-md leading-relaxed text-muted-foreground">
-          The whole inbox is in the freehire CLI, so your own client — himalaya, mbsync, anything
+          The whole inbox is in the HireAll CLI, so your own client — himalaya, mbsync, anything
           that speaks IMAP — can fetch the mail and hand it over with
           <code class="font-mono text-foreground">inbox push</code>. Each message is keyed by its
-          Message-ID, so a nightly re-sync updates rather than duplicates. freehire stores it, links
+          Message-ID, so a nightly re-sync updates rather than duplicates. HireAll stores it, links
           it and shows it on the board like any other message, but never classifies it: that tier
           costs nothing to run and nothing to use.
         </p>
@@ -330,17 +330,17 @@
         </figcaption>
         <pre class="overflow-x-auto p-4 leading-relaxed"><span class="text-muted-foreground"># hand over a batch your client fetched (external_id = Message-ID,</span>
 <span class="text-muted-foreground"># so re-pushing updates instead of duplicating)</span>
-freehire <span class="text-foreground">inbox push --file mail.json</span>
+HireAll <span class="text-foreground">inbox push --file mail.json</span>
 
 <span class="text-muted-foreground"># the work queue: unjudged mail, bodies inline, nothing marked read</span>
-freehire <span class="text-foreground">inbox list --unclassified --body</span>
+HireAll <span class="text-foreground">inbox list --unclassified --body</span>
 
 <span class="text-muted-foreground"># record the verdict; the application's stage follows</span>
-freehire <span class="text-foreground">inbox triage &lt;id&gt; interview_invitation --slug &lt;job&gt;</span>
+HireAll <span class="text-foreground">inbox triage &lt;id&gt; interview_invitation --slug &lt;job&gt;</span>
 
 <span class="text-muted-foreground"># the queues the matcher won't guess at</span>
-freehire <span class="text-foreground">inbox list --link suggested</span>   <span class="text-muted-foreground"># confirm / reject</span>
-freehire <span class="text-foreground">inbox list --link unlinked</span>    <span class="text-muted-foreground"># inbox application</span></pre>
+HireAll <span class="text-foreground">inbox list --link suggested</span>   <span class="text-muted-foreground"># confirm / reject</span>
+HireAll <span class="text-foreground">inbox list --link unlinked</span>    <span class="text-muted-foreground"># inbox application</span></pre>
       </figure>
     </div>
   </section>
@@ -366,8 +366,8 @@ freehire <span class="text-foreground">inbox list --link unlinked</span>    <spa
     <div class="flex flex-col items-start gap-4 rounded-xl border border-border bg-secondary/40 p-6 sm:p-8">
       <h2 class="text-2xl font-semibold tracking-tight">Stop guessing where you stand.</h2>
       <p class="max-w-xl leading-relaxed text-muted-foreground">
-        Claim your freehire address, apply with it, and watch the replies sort themselves onto your
-        board. It's free, like the rest of freehire.
+        Claim your HireAll address, apply with it, and watch the replies sort themselves onto your
+        board. It's free, like the rest of HireAll.
       </p>
       <div class="flex flex-wrap gap-3">
         <Button href={resolve('/my/inbox')} variant="primary" size="lg">Open your inbox</Button>

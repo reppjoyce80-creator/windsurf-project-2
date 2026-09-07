@@ -44,6 +44,18 @@ type Settings struct {
 	// handler.requestOrigin), since it is exactly the set of domains we serve.
 	CookieDomains []string
 
+	// GuestSessionTTL is how long a disposable guest account -- and by cascade,
+	// everything it applied to, saved, or searched -- is allowed to live before the
+	// cleanup sweep reaps it (see auth.EnsureGuestSession, cmd/server's guest-reaper
+	// goroutine). Zero (the default here; handler.Register applies its own 5-minute
+	// fallback) lets the server fall back to that same default.
+	GuestSessionTTL time.Duration
+	// GuestCleanupInterval is how often cmd/server sweeps expired guest accounts.
+	// Default 1 minute -- frequent enough that an expired guest's data disappears close
+	// to its own TTL rather than trailing it by very long, cheap enough (one indexed
+	// DELETE ... WHERE is_guest AND guest_expires_at < now()) to run that often forever.
+	GuestCleanupInterval time.Duration
+
 	// OAuth holds per-provider client credentials keyed by provider name
 	// (google, github, linkedin). OAuth sign-in is optional: a provider with
 	// incomplete credentials is simply disabled (enforced where the provider
@@ -335,6 +347,8 @@ func Load() Settings {
 		JWTTTL:                envDuration("JWT_TTL", 30*24*time.Hour),
 		CookieSecure:          envBool("COOKIE_SECURE", false),
 		CookieDomains:         splitDomains(os.Getenv("COOKIE_DOMAIN")),
+		GuestSessionTTL:       envDuration("GUEST_SESSION_TTL", 5*time.Minute),
+		GuestCleanupInterval:  envDuration("GUEST_CLEANUP_INTERVAL", time.Minute),
 		OAuth:                 loadOAuth(),
 		AuthV2Enabled:         envBool("AUTH_V2_ENABLED", false),
 		MobileAuthCallbacks:   parseNamedValues(os.Getenv("MOBILE_AUTH_CALLBACKS")),

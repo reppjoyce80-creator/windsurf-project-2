@@ -17,8 +17,8 @@
   // Page 2 onward says so, or every page competes for one SERP entry under one title.
   const title = $derived(
     data.pageNumber > 1
-      ? `Tech jobs — page ${data.pageNumber} · freehire`
-      : 'freehire — the open-source search engine for tech jobs',
+      ? `Tech jobs — page ${data.pageNumber} · HireAll`
+      : 'HireAll — the open-source search engine for tech jobs',
   );
   // What the site is (WebSite + the search action that names our own query
   // parameter) and who publishes it (Organization). These describe the site as a

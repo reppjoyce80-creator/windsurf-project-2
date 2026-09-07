@@ -91,7 +91,7 @@
 </script>
 
 <svelte:head>
-  <title>{label} · Market pulse — freehire</title>
+  <title>{label} · Market pulse — HireAll</title>
 </svelte:head>
 
 {#if !isAuthenticated()}

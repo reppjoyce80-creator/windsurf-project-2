@@ -6,18 +6,18 @@
 
   const LLMS_TXT = 'https://freehire.me/llms.txt';
   const OPENAPI = 'https://freehire.me/openapi.yaml';
-  const GPT_URL = 'https://chatgpt.com/g/g-6a5281b64948819193bf3a1021e075da-freehire';
+  const GPT_URL = 'https://chatgpt.com/g/g-6a5281b64948819193bf3a1021e075da-HireAll';
 
   // The whole point of the page: one block you paste into whatever agent you
   // already have. It leans on two URLs that already exist and are already
   // maintained — the install script and llms.txt — rather than restating setup
   // that would then drift from them.
-  const HANDOFF = `Install freehire and use it to run my job search.
+  const HANDOFF = `Install HireAll and use it to run my job search.
 
   curl -fsSL https://freehire.me/install.sh | sh
 
 Then read https://freehire.me/llms.txt for the conventions,
-and \`freehire --help\` for the commands.`;
+and \`HireAll --help\` for the commands.`;
 
   // What an agent can actually do, each pointing at the feature that owns it.
   // Six cells, so no half-empty last row on any breakpoint — those hairline
@@ -118,7 +118,7 @@ and \`freehire --help\` for the commands.`;
           class="reveal mt-6 max-w-2xl text-balance text-4xl font-semibold leading-[0.98] tracking-tighter sm:text-6xl"
           style="--d:80ms"
         >
-          Hand freehire<br />to your agent.
+          Hand HireAll<br />to your agent.
         </h1>
 
         <p class="reveal mt-7 max-w-xl text-lg leading-relaxed text-muted-foreground" style="--d:160ms">
@@ -159,12 +159,12 @@ and \`freehire --help\` for the commands.`;
               {copied ? 'copied ✓' : 'copy'}
             </button>
           </figcaption>
-          <pre class="overflow-x-auto p-4 leading-relaxed">Install freehire and use it to run my job search.
+          <pre class="overflow-x-auto p-4 leading-relaxed">Install HireAll and use it to run my job search.
 
   curl -fsSL <span class="text-foreground">https://freehire.me/install.sh</span> | sh
 
 Then read <span class="text-foreground">https://freehire.me/llms.txt</span> for the conventions,
-and <span class="text-foreground">`freehire --help`</span> for the commands.</pre>
+and <span class="text-foreground">`HireAll --help`</span> for the commands.</pre>
         </figure>
         <p class="mt-3 pl-1 font-mono text-xs text-muted-foreground">
           ↑ paste into your agent — it takes it from there
@@ -229,11 +229,11 @@ and <span class="text-foreground">`freehire --help`</span> for the commands.</pr
 curl -fsSL <span class="text-foreground">https://freehire.me/install.sh</span> | sh
 
 <span class="text-muted-foreground"># only for the account half</span>
-freehire auth login --token <span class="text-foreground">fhk_…</span>
+HireAll auth login --token <span class="text-foreground">fhk_…</span>
 
 <span class="text-muted-foreground"># vocabulary first, then search</span>
-freehire facets
-freehire search <span class="text-foreground">"golang"</span> --remote --region eu</pre>
+HireAll facets
+HireAll search <span class="text-foreground">"golang"</span> --remote --region eu</pre>
         </figure>
       </div>
     </div>
@@ -244,7 +244,7 @@ freehire search <span class="text-foreground">"golang"</span> --remote --region 
         <span class="font-mono text-sm text-muted-foreground">02</span>
         <h3 class="mt-3 text-lg font-semibold tracking-tight">Claude Desktop, or any MCP host</h3>
         <p class="mt-3 text-sm leading-relaxed text-muted-foreground">
-          <code class="font-mono text-foreground">freehire-mcp</code> exposes search, market fit,
+          <code class="font-mono text-foreground">HireAll-mcp</code> exposes search, market fit,
           tracking and CV tailoring as
           <!-- eslint-disable svelte/no-navigation-without-resolve -- absolute URL to the protocol spec, not a SvelteKit route -->
           <a
@@ -259,9 +259,9 @@ freehire search <span class="text-foreground">"golang"</span> --remote --region 
         <pre
           class="mt-4 overflow-x-auto rounded-lg border border-border bg-secondary/50 p-3 font-mono text-xs leading-relaxed">{`{
   "mcpServers": {
-    "freehire": {
+    "HireAll": {
       "command": "npx",
-      "args": ["-y", "freehire-mcp"]
+      "args": ["-y", "HireAll-mcp"]
     }
   }
 }`}</pre>
@@ -356,7 +356,7 @@ freehire search <span class="text-foreground">"golang"</span> --remote --region 
 
     <p class="mt-8 max-w-3xl text-sm leading-relaxed text-muted-foreground">
       An agent never submits an application for you — you still apply on the employer's own site and
-      freehire records that you did. The one exception works the other way round: the
+      HireAll records that you did. The one exception works the other way round: the
       <a
         href={resolve('/features/extension')}
         class="font-medium text-foreground underline-offset-4 hover:underline">browser extension</a
@@ -372,7 +372,7 @@ freehire search <span class="text-foreground">"golang"</span> --remote --region 
       <div>
         <h2 class="text-2xl font-semibold tracking-tight">The surface is the difference</h2>
         <p class="mt-4 leading-relaxed text-muted-foreground">
-          A hosted assistant runs freehire's tools inside someone else's conversation. A local
+          A hosted assistant runs HireAll's tools inside someone else's conversation. A local
           harness runs them next to your files, which is where a job hunt actually lives: the CV you
           keep, the notes you take, the mailbox you export. That is the whole of the gap — not
           model quality.

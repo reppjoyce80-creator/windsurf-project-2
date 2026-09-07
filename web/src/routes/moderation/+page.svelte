@@ -3,7 +3,7 @@
 </script>
 
 <svelte:head>
-  <title>Moderation — freehire</title>
+  <title>Moderation — HireAll</title>
   <!-- Moderator-only page: keep it out of search results. -->
   <meta name="robots" content="noindex" />
 </svelte:head>

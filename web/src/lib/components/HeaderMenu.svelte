@@ -189,7 +189,7 @@
     href={DISCORD_URL}
     target="_blank"
     rel="noreferrer"
-    aria-label="freehire on Discord"
+    aria-label="HireAll on Discord"
     class={cn('hidden sm:inline-flex', iconButton)}
   >
     <ProviderIcon provider="discord" />
@@ -243,7 +243,7 @@
       <div class="flex h-14 shrink-0 items-center justify-between border-b border-border px-4 sm:hidden">
         <span class="flex items-center gap-2 text-sm font-semibold tracking-tight">
           <BrandMark />
-          freehire
+          HireAll
         </span>
         <button
           type="button"
@@ -339,7 +339,7 @@
           target="_blank"
           rel="noreferrer"
           role="menuitem"
-          aria-label="freehire on Discord"
+          aria-label="HireAll on Discord"
           class={cn(rowBase, 'text-muted-foreground')}
         >
           <ProviderIcon provider="discord" class="size-4 shrink-0" />

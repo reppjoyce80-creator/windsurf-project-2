@@ -3,7 +3,7 @@
 </script>
 
 <svelte:head>
-  <title>API keys — freehire</title>
+  <title>API keys — HireAll</title>
 </svelte:head>
 
 <!-- The account shell (my/+layout) owns the container, auth gate, and noindex;

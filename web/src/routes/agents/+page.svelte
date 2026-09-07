@@ -11,7 +11,7 @@
     jsonLdScript([
       faqPageJsonLd(AGENTS_FAQ),
       breadcrumbJsonLd([
-        { name: 'freehire', url: `${origin}/` },
+        { name: 'HireAll', url: `${origin}/` },
         { name: 'Agents', url: canonical },
       ]),
     ])
@@ -19,8 +19,8 @@
 </script>
 
 <Seo
-  title="freehire for AI agents — CLI, MCP and ChatGPT"
-  description="Point your AI agent at the freehire job catalogue. A local harness driving the CLI reaches the whole surface; an MCP host or ChatGPT covers most of it. Search needs no API key."
+  title="HireAll for AI agents — CLI, MCP and ChatGPT"
+  description="Point your AI agent at the HireAll job catalogue. A local harness driving the CLI reaches the whole surface; an MCP host or ChatGPT covers most of it. Search needs no API key."
   {canonical}
 />
 

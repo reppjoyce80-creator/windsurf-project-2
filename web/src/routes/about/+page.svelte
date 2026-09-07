@@ -21,7 +21,7 @@
 <!-- The description was 215 characters and got cut mid-sentence in the SERP snippet,
      and where Google cuts is not where we would. Trimmed to ~155, the width it shows. -->
 <Seo
-  title="About freehire — the open-source search engine for tech jobs"
+  title="About HireAll — the open-source search engine for tech jobs"
   description="An open-source search engine for tech jobs: millions of openings indexed straight from company career boards, deduplicated and tagged by stack and location."
   {canonical}
   image={`${origin}/api/v1/og/about.png`}

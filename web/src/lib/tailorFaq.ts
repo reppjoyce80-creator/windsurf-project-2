@@ -15,7 +15,7 @@ export const TAILOR_FAQ: FaqItem[] = [
   {
     question: 'How do I start tailoring?',
     answer:
-      'From a job. Run the AI match analysis on a vacancy, then tailor from its result — the analysis is what the tailored CV reframes toward, so the flow needs one first. freehire copies your base CV into a new one bound to that vacancy; your original is never edited.',
+      'From a job. Run the AI match analysis on a vacancy, then tailor from its result — the analysis is what the tailored CV reframes toward, so the flow needs one first. HireAll copies your base CV into a new one bound to that vacancy; your original is never edited.',
   },
   {
     question: 'What does it actually change?',
@@ -30,7 +30,7 @@ export const TAILOR_FAQ: FaqItem[] = [
   {
     question: 'Can I do this from the terminal?',
     answer:
-      'Yes. The freehire CLI drives the same flow: `cv context` prints the analysis to reframe toward, `cv get` dumps the document, `cv edit` applies one patch, and `cv render` downloads the PDF. Your own agent can run the whole loop with an API key.',
+      'Yes. The HireAll CLI drives the same flow: `cv context` prints the analysis to reframe toward, `cv get` dumps the document, `cv edit` applies one patch, and `cv render` downloads the PDF. Your own agent can run the whole loop with an API key.',
   },
   {
     question: 'What does it cost?',

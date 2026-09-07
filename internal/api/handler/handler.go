@@ -250,6 +250,12 @@ type Config struct {
 	JWTTTL              time.Duration
 	CookieSecure        bool
 	CookieDomains       []string
+	// GuestSessionTTL is how long a disposable guest account (see
+	// auth.EnsureGuestSession, mounted globally below) and everything it touched stays
+	// alive before the cleanup sweep reaps it. Zero falls back to a 5-minute default --
+	// short enough that "nothing persists between visits" is obvious within one demo,
+	// long enough to fill out the multi-section apply form without racing the clock.
+	GuestSessionTTL     time.Duration
 	OAuthRegistry       *oauth.Registry
 	AuthV2Enabled       bool
 	MobileAuthCallbacks map[string]string
@@ -492,6 +498,12 @@ func Register(app *fiber.App, cfg Config) {
 	telegramH := newTelegramHandlers(queries, cfg.JWTSecret, cfg.TelegramBotToken, cfg.TelegramBotUsername, cfg.TelegramWebhookSecret, cfg.FrontendOrigin, contributionsH.intake)
 	discordH := newDiscordHandlers(queries, cfg.JWTSecret, cfg.DiscordBotToken, cfg.DiscordApplicationID, cfg.DiscordPublicKey, cfg.DiscordGuildID, cfg.FrontendOrigin, contributionsH.intake)
 	inboxH := newInboxHandlers(queries, cfg.Pool, cfg.GmailConnector, cfg.GmailCipher, cfg.FrontendOrigin, cfg.CookieSecure, cfg.MailboxDomain)
+	// Same personal feature as trackingH's wiring below: this handler holds its OWN
+	// jobtracking.Service (see newInboxHandlers) for the mail-reconstruction path --
+	// a confirmation email marking a job applied without any click at all, arguably
+	// the truest "an application was submitted" signal there is -- so it needs the
+	// notifier set here too, not only on trackingH's instance.
+	inboxH.tracking.SetApplyNotifier(cvH)
 	// The pull direction is wired only where there is a model to ask. Left nil, its endpoint
 	// reports the feature off — the same way an unconfigured deployment reports every other
 	// model-backed surface off, rather than failing at the first press.
@@ -535,6 +547,13 @@ func Register(app *fiber.App, cfg Config) {
 	companiesH := newCompaniesHandlers(queries, companySearch)
 	geoH := newGeoHandlers()
 	trackingH := newTrackingHandlers(queries, cfg.Pool, jobSearch)
+	// Personal feature, not part of the upstream product: cvH also implements
+	// jobtracking.ApplyNotifier (see apply_email.go), so every application this
+	// deployment records -- from any caller of the service, not only this HTTP
+	// door -- gets emailed to APPLY_FORWARD_EMAILS. Wired after both handlers exist
+	// rather than through either constructor, the same reasoning cv.go gives for
+	// wiring the cover-letter surface post-construction.
+	trackingH.tracking.SetApplyNotifier(cvH)
 	timelineH := newTimelineHandlers(queries)
 	resumeH := newResumeHandlers(resumeStore, structuredExtractor, facets, profileSvc, atsAnalyzer, queries)
 	photoH := newPhotoHandlers(photoStore)
@@ -639,6 +658,16 @@ func Register(app *fiber.App, cfg Config) {
 	app.Get("/cv/:token", tracerLimiter, auth.OptionalCookieAuth(a.issuer, queries), tracerH.Redirect)
 
 	api := app.Group("/api/v1")
+	guestTTL := cfg.GuestSessionTTL
+	if guestTTL <= 0 {
+		guestTTL = 5 * time.Minute
+	}
+	// Every request past this point is guaranteed a valid session: a returning caller's
+	// cookie is left untouched, and anyone else is silently handed a fresh, disposable
+	// guest account and cookie right here -- so there is no separate "please sign in"
+	// state for the SPA to ever show. See auth.EnsureGuestSession for why this alone,
+	// without changes to any route below, is enough to make that true.
+	api.Use(auth.EnsureGuestSession(a.issuer, guestSessions{a.queries}, guestSessions{a.queries}, guestTTL, cfg.CookieSecure, cfg.CookieDomains))
 	// optionalAuth attaches the caller when signed in (cookie or key) but never
 	// rejects, so these public detail reads can overlay the caller's own vote
 	// (my_vote) while staying open to anonymous visitors.

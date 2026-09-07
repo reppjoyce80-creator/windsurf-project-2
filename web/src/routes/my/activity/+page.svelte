@@ -3,7 +3,7 @@
 </script>
 
 <svelte:head>
-  <title>Saved — Activity — freehire</title>
+  <title>Saved — Activity — HireAll</title>
 </svelte:head>
 
 <div class="flex flex-col gap-4">

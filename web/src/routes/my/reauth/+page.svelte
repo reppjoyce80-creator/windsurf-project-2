@@ -20,7 +20,7 @@
   });
 </script>
 
-<svelte:head><title>Confirm identity · freehire</title></svelte:head>
+<svelte:head><title>Confirm identity · HireAll</title></svelte:head>
 <div class="mx-auto max-w-md py-16 text-center">
   {#if error}
     <p class="text-sm text-destructive">{error}</p>

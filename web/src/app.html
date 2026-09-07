@@ -24,20 +24,21 @@
     prod. theme-color/apple-* meta are static (no build-time value), so they live
     here rather than behind the virtual:pwa-info module. -->
     <link rel="manifest" href="%sveltekit.assets%/manifest.webmanifest" />
-    <meta name="theme-color" content="#0a0a0a" />
+    <meta name="theme-color" content="#fefefc" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-    <meta name="apple-mobile-web-app-title" content="freehire" />
+    <meta name="apple-mobile-web-app-title" content="HireAll" />
     <script>
-      // No flash of the wrong theme: apply the persisted (or OS) choice before
-      // first paint. Mirrors theme.svelte.ts; the toggle re-syncs on mount.
+      // No flash of the wrong theme: apply the persisted choice before first
+      // paint. Mirrors theme.svelte.ts; the toggle re-syncs on mount. Default is
+      // 'light' (not 'system') — an explicit stored 'dark' or 'system' still
+      // honors the user's own choice.
       (function () {
         try {
           var m = localStorage.getItem('hire.theme');
           var dark =
-            m === 'dark' ||
-            ((!m || m === 'system') && matchMedia('(prefers-color-scheme: dark)').matches);
+            m === 'dark' || (m === 'system' && matchMedia('(prefers-color-scheme: dark)').matches);
           if (dark) document.documentElement.classList.add('dark');
         } catch (e) {}
       })();

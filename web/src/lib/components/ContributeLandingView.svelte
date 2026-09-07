@@ -53,7 +53,7 @@
       A search engine is only as good as its coverage.
     </h1>
     <p class="max-w-xl text-lg leading-relaxed text-muted-foreground">
-      freehire is a free, open-source search engine for tech jobs. Its one job is to be
+      HireAll is a free, open-source search engine for tech jobs. Its one job is to be
       <span class="text-foreground">complete</span> — to surface every open role on the market, in
       one searchable place. A company we don’t track is a blind spot. Help us close them.
     </p>
@@ -69,7 +69,7 @@
     <p class="max-w-2xl text-sm leading-relaxed text-muted-foreground">
       Every source we crawl folds into one normalized, deduplicated feed — searchable by stack,
       seniority and location. The more company boards we track, the more of the real market you can
-      actually see and compare. Openness is how it scales: because freehire is open source, anyone
+      actually see and compare. Openness is how it scales: because HireAll is open source, anyone
       can widen that coverage.
     </p>
   </section>

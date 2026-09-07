@@ -3,7 +3,7 @@
 </script>
 
 <svelte:head>
-  <title>Hidden — Activity — freehire</title>
+  <title>Hidden — Activity — HireAll</title>
 </svelte:head>
 
 <Hidden />

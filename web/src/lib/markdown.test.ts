@@ -80,7 +80,7 @@ describe('renderMarkdown — prose survives', () => {
   });
 
   it('opens a link in a new tab', () => {
-    const html = renderMarkdown('[freehire](https://freehire.me/jobs)');
+    const html = renderMarkdown('[HireAll](https://freehire.me/jobs)');
     expect(html).toContain('href="https://freehire.me/jobs"');
     expect(html).toContain('target="_blank"');
     expect(html).toContain('rel="noopener noreferrer"');

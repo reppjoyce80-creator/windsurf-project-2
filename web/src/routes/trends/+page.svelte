@@ -13,16 +13,16 @@
   const origin = $derived(page.url.origin);
   const canonical = $derived(`${origin}/trends`);
   const description =
-    'How the freehire catalogue moves over time — new vacancies added versus postings removed, by day, week, or month.';
+    'How the HireAll catalogue moves over time — new vacancies added versus postings removed, by day, week, or month.';
   // A time series, not a page of prose: the Dataset names the endpoint the chart
   // reads so an engine can fetch the series rather than infer it from the bars.
   const jsonLd = $derived(
     jsonLdScript([
-      datasetJsonLd('freehire job-posting activity over time', description, canonical, origin, [
+      datasetJsonLd('HireAll job-posting activity over time', description, canonical, origin, [
         { name: 'Jobs activity API', contentUrl: `${origin}/api/v1/stats/jobs-activity` },
       ]),
       breadcrumbJsonLd([
-        { name: 'freehire', url: `${origin}/` },
+        { name: 'HireAll', url: `${origin}/` },
         { name: 'Trends', url: canonical },
       ]),
     ]),
@@ -72,9 +72,9 @@
   }
 </script>
 
-<!-- "Trends · freehire" was 17 characters: it named no subject, so nothing in it
+<!-- "Trends · HireAll" was 17 characters: it named no subject, so nothing in it
      could match a query, and it left two thirds of the SERP title width unused. -->
-<Seo title="Tech hiring trends — jobs added and removed daily · freehire" {description} {canonical} />
+<Seo title="Tech hiring trends — jobs added and removed daily · HireAll" {description} {canonical} />
 
 <svelte:head>
   <!-- eslint-disable-next-line svelte/no-at-html-tags -- non-executable JSON-LD built by jsonLdScript, which escapes `<`; raw injection is the only way to emit a structured-data <script> -->

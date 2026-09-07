@@ -122,7 +122,7 @@
         <pre
           class="mt-4 whitespace-pre-wrap rounded-lg border border-border bg-muted/40 p-3 font-sans text-sm leading-relaxed">{draft.body}</pre>
         <p class="mt-3 text-xs text-muted-foreground">
-          Send it from your own mail — freehire never writes to anyone on your behalf.
+          Send it from your own mail — HireAll never writes to anyone on your behalf.
         </p>
         {#if error}
           <p class="mt-2 text-xs text-destructive">{error}</p>

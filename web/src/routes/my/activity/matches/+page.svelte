@@ -3,7 +3,7 @@
 </script>
 
 <svelte:head>
-  <title>Matches — Activity — freehire</title>
+  <title>Matches — Activity — HireAll</title>
 </svelte:head>
 
 <AnalysesView />

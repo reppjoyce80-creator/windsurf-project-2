@@ -2,7 +2,7 @@ import { defineMessages } from '$lib/i18n/t';
 
 export const messages = defineMessages(
   {
-    headTitle: 'Security · freehire',
+    headTitle: 'Security · HireAll',
     title: 'Security',
     subtitle: 'Change your password and end sessions on other devices.',
     password: {
@@ -34,7 +34,7 @@ export const messages = defineMessages(
     },
   },
   {
-    headTitle: 'Безопасность · freehire',
+    headTitle: 'Безопасность · HireAll',
     title: 'Безопасность',
     subtitle: 'Измените пароль и завершите сеансы на других устройствах.',
     password: {

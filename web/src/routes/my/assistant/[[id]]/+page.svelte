@@ -28,7 +28,7 @@
   }
 </script>
 
-<svelte:head><title>Agent — freehire</title></svelte:head>
+<svelte:head><title>Agent — HireAll</title></svelte:head>
 
 <div class="flex h-[calc(100dvh-3.5rem)]">
   <AccountNavRail />

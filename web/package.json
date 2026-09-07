@@ -1,9 +1,9 @@
 {
-  "name": "freehire-web",
+  "name": "hireall-web",
   "private": true,
   "version": "0.1.0",
   "type": "module",
-  "description": "Web frontend for the freehire job aggregator.",
+  "description": "Web frontend for the HireAll job aggregator.",
   "packageManager": "pnpm@11.7.0",
   "scripts": {
     "dev": "vite",

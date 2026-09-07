@@ -3,7 +3,7 @@
 </script>
 
 <svelte:head>
-  <title>Submit a job — freehire</title>
+  <title>Submit a job — HireAll</title>
   <!-- Contribution form: keep it out of search results. -->
   <meta name="robots" content="noindex" />
 </svelte:head>

@@ -36,7 +36,7 @@
   // but the CLI is the intended client — see /cli.
   const cliExample = $derived(
     revealed
-      ? `freehire auth login --token ${revealed.token}\nfreehire search "golang" --remote`
+      ? `HireAll auth login --token ${revealed.token}\nHireAll search "golang" --remote`
       : '',
   );
 
@@ -153,7 +153,7 @@
       <h1 class="text-2xl font-semibold tracking-tight">API keys</h1>
       <p class="text-sm text-muted-foreground">
         Reach the API without a browser — search, open jobs, and track applications from a script.
-        Use the <a href={resolve('/cli')} class="font-medium text-foreground underline-offset-4 hover:underline">freehire CLI</a>,
+        Use the <a href={resolve('/cli')} class="font-medium text-foreground underline-offset-4 hover:underline">HireAll CLI</a>,
         or send the key directly as
         <code class="rounded bg-muted px-1 py-0.5 font-mono text-xs">Authorization: Bearer &lt;key&gt;</code>.
         See the <a href={resolve('/docs/api')} class="font-medium text-foreground underline-offset-4 hover:underline">API reference</a>

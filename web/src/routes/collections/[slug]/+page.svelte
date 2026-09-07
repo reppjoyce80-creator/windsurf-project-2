@@ -32,7 +32,7 @@
   // Page 2 onward says so in the title: without it every page of a collection
   // competes for the same SERP entry under one identical title.
   const pageTitle = $derived(
-    data.pageNumber > 1 ? `${heading} — page ${data.pageNumber} · freehire` : `${heading} · freehire`,
+    data.pageNumber > 1 ? `${heading} — page ${data.pageNumber} · HireAll` : `${heading} · HireAll`,
   );
   // Request hiding the facets the collection pins via `scope`. Note: this only
   // hides standalone facets; the collection facets that live in composite panes
@@ -43,7 +43,7 @@
   const excludeFacets = $derived(Object.keys(data.collection.params));
   // Structured data for this SEO landing page: a CollectionPage wrapping the
   // first page of jobs as an ItemList (so engines read the page as a curated
-  // collection), plus a breadcrumb trail (freehire → Collections → this one),
+  // collection), plus a breadcrumb trail (HireAll → Collections → this one),
   // mirroring the company landing.
   const jsonLd = $derived(
     jsonLdScript([
@@ -54,7 +54,7 @@
         jobListItems(data.initial.items, origin)
       ),
       breadcrumbJsonLd([
-        { name: 'freehire', url: `${origin}/` },
+        { name: 'HireAll', url: `${origin}/` },
         { name: 'Collections', url: `${origin}/collections` },
         { name: heading, url: base },
       ]),

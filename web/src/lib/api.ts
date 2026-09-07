@@ -309,6 +309,68 @@ export interface EmailBody extends EmailLinking {
   read: boolean;
 }
 
+/** One screening-question answer as typed into the Apply form. */
+export interface ApplyAnswerInput {
+  question: string;
+  answer: string;
+}
+
+/** One prior job as entered on the Apply form's work-history section. */
+export interface ApplyWorkHistoryInput {
+  company?: string;
+  title?: string;
+  start_date?: string;
+  end_date?: string;
+  responsibilities?: string;
+  reason_for_leaving?: string;
+}
+
+/** One school/credential as entered on the Apply form's education section. */
+export interface ApplyEducationInput {
+  school?: string;
+  degree?: string;
+  field_of_study?: string;
+  graduation_year?: string;
+}
+
+/** What the Apply form collects before sending -- shaped like a real ATS application
+ *  form section by section (personal & contact, work history, education, skills, the
+ *  legal/eligibility disclosures), not just the three contact fields a screening form
+ *  alone would need. Every field optional -- a blank field is simply left out of the
+ *  email this becomes (see apply_email.go), not an error. */
+export interface ApplySubmissionInput {
+  first_name?: string;
+  middle_name?: string;
+  last_name?: string;
+  email?: string;
+  phone?: string;
+  city?: string;
+  state?: string;
+  postal_code?: string;
+  country?: string;
+
+  work_history?: ApplyWorkHistoryInput[];
+  education?: ApplyEducationInput[];
+  certifications?: string;
+
+  hard_skills?: string;
+  languages?: string;
+  soft_skills?: string;
+
+  /** "yes", "no", or omitted (left blank). */
+  work_authorized?: string;
+  /** "yes", "no", or omitted (left blank). */
+  needs_sponsorship?: string;
+  /** Voluntary self-identification -- omitted means declined to answer. */
+  eeo_race?: string;
+  eeo_gender?: string;
+  eeo_veteran?: string;
+  eeo_disability?: string;
+
+  message?: string;
+  answers?: ApplyAnswerInput[];
+}
+
 /** Build an API client bound to a specific fetch and base URL.
  *
  *  - Browser: the default `api` uses global fetch and an empty base, so requests
@@ -864,6 +926,17 @@ export function createApi(
   /** Mark a job as applied for the current user. */
   function markJobApplied(slug: string): Promise<UserJob> {
     return jobInteraction(slug, 'apply');
+  }
+
+  /** Submit the Apply form: the same endpoint markJobApplied posts to, but carrying
+   *  what the candidate actually typed. The personal apply-email feature
+   *  (internal/api/handler/apply_email.go) sends that verbatim instead of falling
+   *  back to its own best-effort reconstruction from stored profile data. */
+  function submitApplication(slug: string, submission: ApplySubmissionInput): Promise<UserJob> {
+    return requestData<UserJob>(
+      `/api/v1/jobs/${encodeURIComponent(slug)}/apply`,
+      jsonBody('POST', submission),
+    );
   }
 
   /** Save (bookmark) a job for the current user. Whether a reminder is scheduled
@@ -1451,7 +1524,7 @@ export function createApi(
     return requestData<DiscordStatus>('/api/v1/me/discord');
   }
 
-  /** Mint a one-time token: the user runs `/link token:<token>` in the freehire Discord
+  /** Mint a one-time token: the user runs `/link token:<token>` in the HireAll Discord
    *  server to connect their account. */
   async function discordLink(): Promise<DiscordLinkResult> {
     return requestData<DiscordLinkResult>('/api/v1/me/discord/link', { method: 'POST' });
@@ -1479,7 +1552,7 @@ export function createApi(
     return requestData<PrefillResult>('/api/v1/submissions/prefill', jsonBody('POST', { url }));
   }
 
-  /** Hand a job link to freehire. One sequence serves every surface: the catalog is checked,
+  /** Hand a job link to HireAll. One sequence serves every surface: the catalog is checked,
    *  the vacancy imported when anything can read it, and the board behind it recorded for
    *  onboarding either way. The outcome says which of those happened (422 for a non-URL). */
   async function resolveJobLink(url: string): Promise<ResolvedLink> {
@@ -2141,6 +2214,7 @@ export function createApi(
     me,
     recordJobView,
     markJobApplied,
+    submitApplication,
     saveJob,
     unsaveJob,
     dismissJob,

@@ -31,7 +31,7 @@
 
 <svelte:head>
   <!-- Base title; the child pages override it with their view name. -->
-  <title>Tracking — freehire</title>
+  <title>Tracking — HireAll</title>
 </svelte:head>
 
 <div class="flex flex-col gap-4">

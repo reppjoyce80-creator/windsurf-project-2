@@ -18,7 +18,7 @@
     jsonLdScript([
       webApiJsonLd(origin),
       breadcrumbJsonLd([
-        { name: 'freehire', url: `${origin}/` },
+        { name: 'HireAll', url: `${origin}/` },
         { name: 'API reference', url: canonical },
       ]),
     ])
@@ -26,8 +26,8 @@
 </script>
 
 <Seo
-  title="freehire API reference — query jobs by filters"
-  description="The freehire HTTP API: a read-first, open endpoint set over the job catalogue. Search and filter jobs by seniority, skills, region, salary and more, read companies, and track applications with an API key."
+  title="HireAll API reference — query jobs by filters"
+  description="The HireAll HTTP API: a read-first, open endpoint set over the job catalogue. Search and filter jobs by seniority, skills, region, salary and more, read companies, and track applications with an API key."
   {canonical}
 />
 
@@ -38,10 +38,10 @@
 
 <!-- Header. -->
 <header class="mb-14 border-b border-border pb-10">
-  <p class="font-mono text-xs uppercase tracking-[0.24em] text-brand-strong">// freehire API</p>
+  <p class="font-mono text-xs uppercase tracking-[0.24em] text-brand-strong">// HireAll API</p>
   <h1 class="mt-4 text-4xl font-semibold tracking-tighter sm:text-5xl">API reference</h1>
   <p class="mt-5 max-w-2xl text-lg leading-relaxed text-muted-foreground">
-    A read-first, open HTTP API over the freehire job catalogue — query jobs by rich filters, read
+    A read-first, open HTTP API over the HireAll job catalogue — query jobs by rich filters, read
     companies, and (with a key) track applications.
   </p>
   <div class="mt-6 inline-flex items-center gap-2 rounded-lg border border-border bg-secondary/40 px-3 py-1.5 font-mono text-sm">

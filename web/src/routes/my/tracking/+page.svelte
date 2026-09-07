@@ -6,7 +6,7 @@
 </script>
 
 <svelte:head>
-  <title>Tracking — freehire</title>
+  <title>Tracking — HireAll</title>
 </svelte:head>
 
 <JobBoard initial={data.board} />

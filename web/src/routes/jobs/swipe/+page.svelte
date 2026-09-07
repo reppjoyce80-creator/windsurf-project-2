@@ -3,7 +3,7 @@
 </script>
 
 <svelte:head>
-  <title>Swipe jobs — freehire</title>
+  <title>Swipe jobs — HireAll</title>
   <!-- Personal, interactive triage view: keep it out of search results. -->
   <meta name="robots" content="noindex" />
 </svelte:head>

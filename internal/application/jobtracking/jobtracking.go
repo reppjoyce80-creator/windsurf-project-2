@@ -8,6 +8,7 @@ import (
 	"context"
 	"errors"
 	"log"
+	"strings"
 	"time"
 
 	"github.com/strelov1/freehire/internal/application/userjob"
@@ -280,11 +281,142 @@ type Option func(*Service)
 // no reminder store wants.
 func WithReminders(r Reminders) Option { return func(s *Service) { s.reminders = r } }
 
+// ApplyNotifier is told about every application this service records, from
+// whichever caller recorded it -- the HTTP door (MarkApplied/MarkAppliedOn), the
+// in-app assistant's apply tool, or the mail-reconstruction path (MarkAppliedAt).
+// Living on the service rather than at each door is the same reasoning Reminders
+// above states: every caller means the same thing by "applied", so a side effect
+// of applying belongs where the use case is.
+//
+// Declared here rather than depending on a concrete sender for the same layering
+// reason as Reminders: a real implementation lives above this package and is
+// wired in from the composition root, after construction (see SetApplyNotifier)
+// -- personal-deployment side effect, not part of the upstream use case, so it
+// does not ride the same opts-at-construction path Reminders does.
+// ApplyAnswer is one question/answer pair from the candidate's own filled-in
+// application form -- the employer's question text alongside what the candidate
+// actually typed, as collected by the HTTP apply door.
+type ApplyAnswer struct {
+	Question string
+	Answer   string
+}
+
+// WorkHistoryEntry is one prior job, most-recent-first as the candidate ordered
+// them -- this deployment never re-sorts what was typed in.
+type WorkHistoryEntry struct {
+	Company          string
+	Title            string
+	StartDate        string
+	EndDate          string // blank or "Present" both mean current
+	Responsibilities string
+	ReasonForLeaving string
+}
+
+// EducationEntry is one school/credential. GraduationYear is free text (a real
+// application form takes "2019", "expected 2027", or "in progress" alike) rather
+// than a parsed date -- there is nothing here that computes against it.
+type EducationEntry struct {
+	School         string
+	Degree         string
+	FieldOfStudy   string
+	GraduationYear string
+}
+
+// ApplySubmission is the candidate's own filled-in application form, carried to the
+// ApplyNotifier in place of it reconstructing one from stored profile data. Only the
+// HTTP apply door ever collects one (see MarkAppliedWithSubmission); every field is
+// optional, so a form the candidate left mostly blank still carries whatever they did
+// fill in. Shaped after the fields a real ATS application asks for -- personal and
+// contact info, work history, education, skills, and the legal/eligibility questions
+// (work authorization, voluntary EEO self-identification) -- rather than the three
+// contact fields a screening form alone would need, because this is meant to stand in
+// for the whole application, not just the employer's own question list (`Answers`,
+// still carried separately below).
+type ApplySubmission struct {
+	// Personal & contact.
+	FirstName  string
+	MiddleName string
+	LastName   string
+	Email      string
+	Phone      string
+	City       string
+	State      string
+	PostalCode string
+	Country    string
+
+	// Work history and education, in the order the candidate entered them.
+	WorkHistory []WorkHistoryEntry
+	Education   []EducationEntry
+	// Free text -- licenses and certifications don't share a common shape the way
+	// a school/degree/year row does, and forcing one invites empty rows.
+	Certifications string
+
+	// Skills & qualifications. Free text rather than a tag picker -- this mirrors
+	// what a real application form's textarea would carry, not a structured
+	// profile.
+	HardSkills string
+	Languages  string
+	SoftSkills string
+
+	// Legal & eligibility disclosures. WorkAuthorized/NeedsSponsorship are "yes",
+	// "no", or "" (left blank). The EEO fields are voluntary self-identification
+	// -- "" means declined to answer, exactly as leaving them blank on a real
+	// form would, never a default guess.
+	WorkAuthorized   string
+	NeedsSponsorship string
+	EEORace          string
+	EEOGender        string
+	EEOVeteran       string
+	EEODisability    string
+
+	Message string
+	Answers []ApplyAnswer
+}
+
+// FullName joins the submitted name parts with a space, skipping whichever are
+// blank -- MiddleName is optional on every real application form, and a candidate
+// who left it out shouldn't see a double space in their own emailed copy.
+func (s ApplySubmission) FullName() string {
+	parts := make([]string, 0, 3)
+	for _, p := range []string{s.FirstName, s.MiddleName, s.LastName} {
+		if p != "" {
+			parts = append(parts, p)
+		}
+	}
+	return strings.Join(parts, " ")
+}
+
+// Location joins the submitted city/state/postal/country into one display line,
+// skipping whichever are blank -- the same "just City, State, Zip" shape most
+// application forms accept in place of a full street address.
+func (s ApplySubmission) Location() string {
+	parts := make([]string, 0, 4)
+	for _, p := range []string{s.City, s.State, s.PostalCode, s.Country} {
+		if p != "" {
+			parts = append(parts, p)
+		}
+	}
+	return strings.Join(parts, ", ")
+}
+
+type ApplyNotifier interface {
+	// submission is nil for the two callers that never collect one -- the in-app
+	// assistant's apply tool and the mail-reconstruction path -- and non-nil only when
+	// the HTTP apply door recorded one (MarkAppliedWithSubmission).
+	NotifyApplied(ctx context.Context, userID, jobID int64, slug string, submission *ApplySubmission) error
+}
+
 // Service implements the per-user job-tracking use cases.
 type Service struct {
-	repo      Repository
-	reminders Reminders
+	repo          Repository
+	reminders     Reminders
+	applyNotifier ApplyNotifier
 }
+
+// SetApplyNotifier attaches (or replaces) the apply-notification side effect after
+// construction. Nil-safe to call with nil: that's how a deployment with none
+// configured stays silent, same as never calling it at all.
+func (s *Service) SetApplyNotifier(n ApplyNotifier) { s.applyNotifier = n }
 
 // New creates a Service backed by the given Repository.
 func New(repo Repository, opts ...Option) *Service {
@@ -314,6 +446,25 @@ func (s *Service) cancelReminder(ctx context.Context, userID, jobID int64) {
 	}
 	if err := s.reminders.Cancel(ctx, userID, jobID); err != nil {
 		log.Printf("jobtracking: cancel reminder user=%d job=%d: %v", userID, jobID, err)
+	}
+}
+
+// notifyApplied is best-effort, mirroring cancelReminder just above: the tracking
+// write already succeeded and is the thing that matters, so a notifier failure is
+// logged rather than turned into an error the caller has to handle.
+func (s *Service) notifyApplied(ctx context.Context, userID, jobID int64, slug string) {
+	s.notifyAppliedWithSubmission(ctx, userID, jobID, slug, nil)
+}
+
+// notifyAppliedWithSubmission is notifyApplied's submission-carrying twin, best-effort
+// in the same way: the tracking write already succeeded, so a notifier failure is
+// logged rather than turned into an error the caller has to handle.
+func (s *Service) notifyAppliedWithSubmission(ctx context.Context, userID, jobID int64, slug string, submission *ApplySubmission) {
+	if s.applyNotifier == nil {
+		return
+	}
+	if err := s.applyNotifier.NotifyApplied(ctx, userID, jobID, slug, submission); err != nil {
+		log.Printf("jobtracking: notify applied user=%d job=%d: %v", userID, jobID, err)
 	}
 }
 
@@ -393,6 +544,27 @@ func (s *Service) MarkApplied(ctx context.Context, userID int64, slug, source st
 	}
 	// Applying ends the "come back and apply" intent.
 	s.cancelReminder(ctx, userID, jobID)
+	s.notifyApplied(ctx, userID, jobID, slug)
+	return row, nil
+}
+
+// MarkAppliedWithSubmission behaves exactly like MarkApplied, but carries the
+// candidate's own filled-in application form to the ApplyNotifier instead of leaving
+// it to reconstruct one from stored profile data. Only the HTTP apply door calls this
+// -- the one caller that ever collects a submission (see JobView.svelte's apply
+// dialog) -- so the assistant tool and mail reconstruction are untouched and keep
+// calling plain MarkApplied, which the notifier still serves exactly as before.
+func (s *Service) MarkAppliedWithSubmission(ctx context.Context, userID int64, slug, source string, submission ApplySubmission) (Interaction, error) {
+	jobID, err := s.repo.JobIDBySlug(ctx, slug)
+	if err != nil {
+		return Interaction{}, err
+	}
+	row, err := s.repo.MarkApplied(ctx, userID, jobID, source)
+	if err != nil {
+		return row, err
+	}
+	s.cancelReminder(ctx, userID, jobID)
+	s.notifyAppliedWithSubmission(ctx, userID, jobID, slug, &submission)
 	return row, nil
 }
 
@@ -411,6 +583,7 @@ func (s *Service) MarkAppliedAt(ctx context.Context, userID int64, slug string, 
 	// one does. Only the HTTP door used to cancel, so this path never did — the
 	// same omission this side effect moved down here to stop repeating.
 	s.cancelReminder(ctx, userID, jobID)
+	s.notifyApplied(ctx, userID, jobID, slug)
 	return row, nil
 }
 
@@ -438,6 +611,7 @@ func (s *Service) MarkAppliedOn(ctx context.Context, userID int64, slug string, 
 		return row, err
 	}
 	s.cancelReminder(ctx, userID, jobID)
+	s.notifyApplied(ctx, userID, jobID, slug)
 	return row, nil
 }
 

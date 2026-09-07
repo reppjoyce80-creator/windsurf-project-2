@@ -8,7 +8,7 @@
   // The account's preferred interface language: read from the resolved session
   // (no extra fetch — it rides GET /me already). Drives both LLM output
   // language (assistant/CV) and, for English/Russian, the translated `/my/**`
-  // interface (freehire#1836) — the other four supported values still fall back
+  // interface (HireAll#1836) — the other four supported values still fall back
   // to English there until translated. The set is small and curated (matches
   // the backend's CHECK constraint), so a select2-style type-to-filter combobox
   // reads better here than a plain <select> with six options — flags make each

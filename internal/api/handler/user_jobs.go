@@ -151,13 +151,164 @@ func (h *trackingHandlers) RecordView(c *fiber.Ctx) error {
 	return c.JSON(fiber.Map{"data": toResponse(interaction)})
 }
 
-// applyRequest is the optional body of an apply: the day the application was actually sent.
+// applyRequest is the optional body of an apply: either just the day the application was
+// actually sent, or the Apply form's own fields (see below), or both, or neither.
 //
-// A calendar date rather than a timestamp, read with appliedOnLayout — the same layout the ghost
-// report parses, since both take a day from a person. Asking for an instant would invite one
-// bearing a timezone, which reads as a different day either side of a border.
+// AppliedOn is a calendar date rather than a timestamp, read with appliedOnLayout — the same
+// layout the ghost report parses, since both take a day from a person. Asking for an instant
+// would invite one bearing a timezone, which reads as a different day either side of a border.
+//
+// The rest mirrors a real ATS application form section by section (see ApplyFormDialog.svelte):
+// personal & contact, work history, education, skills, and the legal/eligibility disclosures --
+// not just the three fields a screening form alone would need. Every field is optional, same as
+// before: absent, they leave the plain undated apply this endpoint has always accepted; present,
+// they become a jobtracking.ApplySubmission (see submission below) carried to the ApplyNotifier
+// instead of its own reconstruction.
 type applyRequest struct {
 	AppliedOn string `json:"applied_on"`
+
+	FirstName  string `json:"first_name"`
+	MiddleName string `json:"middle_name"`
+	LastName   string `json:"last_name"`
+	Email      string `json:"email"`
+	Phone      string `json:"phone"`
+	City       string `json:"city"`
+	State      string `json:"state"`
+	PostalCode string `json:"postal_code"`
+	Country    string `json:"country"`
+
+	WorkHistory    []applyWorkHistoryInput `json:"work_history"`
+	Education      []applyEducationInput   `json:"education"`
+	Certifications string                  `json:"certifications"`
+
+	HardSkills string `json:"hard_skills"`
+	Languages  string `json:"languages"`
+	SoftSkills string `json:"soft_skills"`
+
+	WorkAuthorized   string `json:"work_authorized"`
+	NeedsSponsorship string `json:"needs_sponsorship"`
+	EEORace          string `json:"eeo_race"`
+	EEOGender        string `json:"eeo_gender"`
+	EEOVeteran       string `json:"eeo_veteran"`
+	EEODisability    string `json:"eeo_disability"`
+
+	Message string             `json:"message"`
+	Answers []applyAnswerInput `json:"answers"`
+}
+
+// applyWorkHistoryInput is one prior job as entered on the Apply form.
+type applyWorkHistoryInput struct {
+	Company          string `json:"company"`
+	Title            string `json:"title"`
+	StartDate        string `json:"start_date"`
+	EndDate          string `json:"end_date"`
+	Responsibilities string `json:"responsibilities"`
+	ReasonForLeaving string `json:"reason_for_leaving"`
+}
+
+// applyEducationInput is one school/credential as entered on the Apply form.
+type applyEducationInput struct {
+	School         string `json:"school"`
+	Degree         string `json:"degree"`
+	FieldOfStudy   string `json:"field_of_study"`
+	GraduationYear string `json:"graduation_year"`
+}
+
+// applyAnswerInput is one screening question and the candidate's own answer to it, as
+// submitted from the Apply form.
+type applyAnswerInput struct {
+	Question string `json:"question"`
+	Answer   string `json:"answer"`
+}
+
+// submission reports whether the request carried any of the applicant's own form
+// fields, and builds the jobtracking.ApplySubmission for it if so. A request with none
+// of them -- the plain POST /apply the button has always sent, and the only shape the
+// assistant tool and mail reconstruction ever produce, since they never go through
+// this HTTP door at all -- reports false, leaving the original undated apply untouched.
+//
+// A work-history or education row where every field is blank is dropped rather than
+// carried through: the form always sends whatever rows the candidate added, including
+// one they added and then left empty, and an all-blank row in the emailed copy reads
+// as a mistake rather than as "nothing here".
+func (r applyRequest) submission() (jobtracking.ApplySubmission, bool) {
+	has := r.FirstName != "" || r.MiddleName != "" || r.LastName != "" || r.Email != "" ||
+		r.Phone != "" || r.City != "" || r.State != "" || r.PostalCode != "" || r.Country != "" ||
+		len(r.WorkHistory) > 0 || len(r.Education) > 0 || r.Certifications != "" ||
+		r.HardSkills != "" || r.Languages != "" || r.SoftSkills != "" ||
+		r.WorkAuthorized != "" || r.NeedsSponsorship != "" ||
+		r.EEORace != "" || r.EEOGender != "" || r.EEOVeteran != "" || r.EEODisability != "" ||
+		r.Message != "" || len(r.Answers) > 0
+	if !has {
+		return jobtracking.ApplySubmission{}, false
+	}
+
+	workHistory := make([]jobtracking.WorkHistoryEntry, 0, len(r.WorkHistory))
+	for _, w := range r.WorkHistory {
+		if w.Company == "" && w.Title == "" && w.StartDate == "" && w.EndDate == "" &&
+			w.Responsibilities == "" && w.ReasonForLeaving == "" {
+			continue
+		}
+		workHistory = append(workHistory, jobtracking.WorkHistoryEntry{
+			Company:          w.Company,
+			Title:            w.Title,
+			StartDate:        w.StartDate,
+			EndDate:          w.EndDate,
+			Responsibilities: w.Responsibilities,
+			ReasonForLeaving: w.ReasonForLeaving,
+		})
+	}
+
+	education := make([]jobtracking.EducationEntry, 0, len(r.Education))
+	for _, e := range r.Education {
+		if e.School == "" && e.Degree == "" && e.FieldOfStudy == "" && e.GraduationYear == "" {
+			continue
+		}
+		education = append(education, jobtracking.EducationEntry{
+			School:         e.School,
+			Degree:         e.Degree,
+			FieldOfStudy:   e.FieldOfStudy,
+			GraduationYear: e.GraduationYear,
+		})
+	}
+
+	answers := make([]jobtracking.ApplyAnswer, 0, len(r.Answers))
+	for _, a := range r.Answers {
+		if a.Question == "" && a.Answer == "" {
+			continue
+		}
+		answers = append(answers, jobtracking.ApplyAnswer{Question: a.Question, Answer: a.Answer})
+	}
+
+	return jobtracking.ApplySubmission{
+		FirstName:  r.FirstName,
+		MiddleName: r.MiddleName,
+		LastName:   r.LastName,
+		Email:      r.Email,
+		Phone:      r.Phone,
+		City:       r.City,
+		State:      r.State,
+		PostalCode: r.PostalCode,
+		Country:    r.Country,
+
+		WorkHistory:    workHistory,
+		Education:      education,
+		Certifications: r.Certifications,
+
+		HardSkills: r.HardSkills,
+		Languages:  r.Languages,
+		SoftSkills: r.SoftSkills,
+
+		WorkAuthorized:   r.WorkAuthorized,
+		NeedsSponsorship: r.NeedsSponsorship,
+		EEORace:          r.EEORace,
+		EEOGender:        r.EEOGender,
+		EEOVeteran:       r.EEOVeteran,
+		EEODisability:    r.EEODisability,
+
+		Message: r.Message,
+		Answers: answers,
+	}, true
 }
 
 // MarkApplied marks a job as applied for the authenticated user and returns the
@@ -171,14 +322,18 @@ func (h *trackingHandlers) MarkApplied(c *fiber.Ctx) error {
 	if err != nil {
 		return err
 	}
-	day, err := statedApplyDay(c)
+	in, day, err := parseApplyRequest(c)
 	if err != nil {
 		return err
 	}
-	// The two paths differ only in which date the application takes; everything after is the
-	// same apply, so they rejoin immediately rather than each carrying their own tail.
+	// Three paths rejoin immediately after: a filled-in Apply form (submission wins over
+	// any date -- the form is filled out and submitted now, not backdated), a stated date
+	// with no form, or the plain apply that has always been the default.
 	var interaction jobtracking.Interaction
-	if day != nil {
+	if submission, ok := in.submission(); ok {
+		interaction, err = h.tracking.MarkAppliedWithSubmission(
+			c.Context(), userID, c.Params("slug"), appevent.SourceUser, submission)
+	} else if day != nil {
 		// The believable-date window belongs to the service, so an out-of-range day arrives
 		// as an error to render rather than as a rule restated here.
 		interaction, err = h.tracking.MarkAppliedOn(
@@ -192,10 +347,11 @@ func (h *trackingHandlers) MarkApplied(c *fiber.Ctx) error {
 	return c.JSON(fiber.Map{"data": toResponse(interaction)})
 }
 
-// statedApplyDay reads the optional day out of the request. It answers nil only when the caller
-// sent nothing at all, or sent a body carrying no `applied_on`: apply has always been callable
-// with an empty request, and a client sending none is asking for today rather than making a
-// mistake.
+// parseApplyRequest reads the optional body of an apply -- both the plain applied_on date
+// and (see applyRequest.submission) the Apply form's own fields. The returned day is nil
+// whenever the caller sent nothing at all, or a body carrying no `applied_on`: apply has
+// always been callable with an empty request, and a client sending none is asking for today
+// rather than making a mistake.
 //
 // Anything else that fails to read is a 400, including a body that is not JSON and one whose
 // `applied_on` is not a string. Treating those as "no date" would stamp today for a caller who
@@ -207,22 +363,22 @@ func (h *trackingHandlers) MarkApplied(c *fiber.Ctx) error {
 // The day is returned as a day. Placing it at the storage hour is the service's job, because the
 // believable-date window is checked against the day and would refuse "today" all morning if it
 // were checked against the derived instant.
-func statedApplyDay(c *fiber.Ctx) (*time.Time, error) {
+func parseApplyRequest(c *fiber.Ctx) (applyRequest, *time.Time, error) {
 	if len(c.Body()) == 0 {
-		return nil, nil
+		return applyRequest{}, nil, nil
 	}
 	var in applyRequest
 	if err := c.BodyParser(&in); err != nil {
-		return nil, fiber.NewError(fiber.StatusBadRequest, "invalid request body")
+		return applyRequest{}, nil, fiber.NewError(fiber.StatusBadRequest, "invalid request body")
 	}
 	if in.AppliedOn == "" {
-		return nil, nil
+		return in, nil, nil
 	}
 	day, err := time.Parse(appliedOnLayout, in.AppliedOn)
 	if err != nil {
-		return nil, fiber.NewError(fiber.StatusBadRequest, "applied_on must be a date like 2026-07-29")
+		return applyRequest{}, nil, fiber.NewError(fiber.StatusBadRequest, "applied_on must be a date like 2026-07-29")
 	}
-	return &day, nil
+	return in, &day, nil
 }
 
 // SaveJob saves (bookmarks) a job for the authenticated user and returns the

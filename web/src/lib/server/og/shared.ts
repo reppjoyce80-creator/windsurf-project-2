@@ -8,7 +8,7 @@
 export const OG_WIDTH = 1200;
 export const OG_HEIGHT = 630;
 
-// The freehire brand mark (a circle with a diamond cut-out), inlined as a base64
+// The HireAll brand mark (a circle with a diamond cut-out), inlined as a base64
 // data-URI so satori embeds it with no network fetch (satori cannot fetch remote
 // images). Coloured #0a0a0a to match the footer wordmark beside it.
 const MARK_SVG =
@@ -60,14 +60,14 @@ export function chipMarkup(chip: Chip): string {
   return `<div style="${style}">${esc(chip.text)}</div>`;
 }
 
-/** The shared bottom row: the freehire mark + wordmark on the left, the site
+/** The shared bottom row: the HireAll mark + wordmark on the left, the site
  *  domain on the right. Every card closes with this. */
 export function brandFooter(): string {
   return `
   <div style="display:flex;align-items:center;justify-content:space-between">
     <div style="display:flex;align-items:center;gap:14px">
       <img src="${MARK_DATA_URI}" style="width:34px;height:34px" />
-      <div style="display:flex;font-size:30px;font-weight:700;letter-spacing:-0.03em">freehire</div>
+      <div style="display:flex;font-size:30px;font-weight:700;letter-spacing:-0.03em">HireAll</div>
     </div>
     <div style="display:flex;font-size:22px;color:#a3a3a3">freehire.me</div>
   </div>`;

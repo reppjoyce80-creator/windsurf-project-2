@@ -69,7 +69,7 @@
         Rewrite your CV for one job. Invent nothing.
       </h1>
       <p class="mt-7 max-w-xl text-lg leading-relaxed text-muted-foreground">
-        A generic CV loses to a specific one, and a fabricated one loses the interview. freehire
+        A generic CV loses to a specific one, and a fabricated one loses the interview. HireAll
         reframes what you have actually done toward the vacancy in front of you — pulling the
         relevant work forward, saying it in the job's own terms, and asking you about anything it
         cannot find in your history.
@@ -84,7 +84,7 @@
     <figure class="overflow-hidden rounded-xl border border-border bg-card shadow-sm">
       <figcaption class="flex items-center gap-2 border-b border-border px-4 py-2.5 text-xs text-muted-foreground">
         <span class="size-2.5 rounded-full bg-muted-foreground/30"></span>
-        freehire · Tailoring
+        HireAll · Tailoring
       </figcaption>
       <div class="grid gap-px bg-border sm:grid-cols-[1fr_1.1fr_0.85fr]">
         <div class="bg-background p-3">
@@ -231,7 +231,7 @@
           Or hand the loop to your own agent.
         </h2>
         <p class="mt-5 max-w-md leading-relaxed text-muted-foreground">
-          The same flow runs on the freehire CLI with one API key, so a harness you wrote can tailor
+          The same flow runs on the HireAll CLI with one API key, so a harness you wrote can tailor
           the CV instead: read the analysis, read the document, apply patches, render. Same rules —
           the split is in the context it reads, so your agent inherits the honesty constraint rather
           than being trusted with it.
@@ -248,16 +248,16 @@
           terminal
         </figcaption>
         <pre class="overflow-x-auto p-4 leading-relaxed"><span class="text-muted-foreground"># what to reframe toward, and what to ask about</span>
-freehire <span class="text-foreground">cv context &lt;cv-id&gt;</span>
+HireAll <span class="text-foreground">cv context &lt;cv-id&gt;</span>
 
 <span class="text-muted-foreground"># the document as JSON</span>
-freehire <span class="text-foreground">cv get &lt;cv-id&gt;</span>
+HireAll <span class="text-foreground">cv get &lt;cv-id&gt;</span>
 
 <span class="text-muted-foreground"># one field-level edit</span>
-freehire <span class="text-foreground">cv edit &lt;cv-id&gt; --op set --path 'experience[0].bullets[1]' --value '…'</span>
+HireAll <span class="text-foreground">cv edit &lt;cv-id&gt; --op set --path 'experience[0].bullets[1]' --value '…'</span>
 
 <span class="text-muted-foreground"># the PDF</span>
-freehire <span class="text-foreground">cv render &lt;cv-id&gt; --out cv.pdf</span></pre>
+HireAll <span class="text-foreground">cv render &lt;cv-id&gt; --out cv.pdf</span></pre>
       </figure>
     </div>
   </section>

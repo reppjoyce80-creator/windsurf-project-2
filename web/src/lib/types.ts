@@ -451,8 +451,8 @@ export interface SubmissionInput {
   salary_period?: string;
 }
 
-/** What freehire could parse from a pasted job URL, for the submit form to prefill —
- *  never persisted. A field freehire's own dictionaries derive better than any source
+/** What HireAll could parse from a pasted job URL, for the submit form to prefill —
+ *  never persisted. A field HireAll's own dictionaries derive better than any source
  *  page states it (skills, cities) is not included. */
 export interface PrefillResult {
   title?: string;
@@ -1030,7 +1030,7 @@ export interface DiscordStatus {
   discord_id?: number;
 }
 
-/** A one-time token to run `/link token:<token>` in the freehire Discord server,
+/** A one-time token to run `/link token:<token>` in the HireAll Discord server,
  *  plus the exact instruction text to show the user. */
 export interface DiscordLinkResult {
   token: string;

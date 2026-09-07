@@ -3,7 +3,7 @@
 </script>
 
 <svelte:head>
-  <title>Referrals — freehire</title>
+  <title>Referrals — HireAll</title>
 </svelte:head>
 
 <!-- The account shell (my/+layout) owns the container, auth gate, and noindex. -->

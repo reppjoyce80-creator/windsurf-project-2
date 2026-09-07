@@ -1,4 +1,4 @@
-// The freehire public API, described as data. This single module is the source
+// The HireAll public API, described as data. This single module is the source
 // of truth for BOTH the rendered /docs/api page and the generated docs/API.md
 // (web/scripts/gen-api-docs.mjs), so the two can never drift. The job-search
 // filter vocabulary is NOT duplicated here — it lives in ./filters, derived from
@@ -136,7 +136,7 @@ export const OVERVIEW: Overview[] = [
         '`/jobs/{slug}/match-analysis` and hit the same handlers. They still work, ' +
         'so existing clients do not break — use the match-analysis paths in new code.',
       'Most of this API is also a CLI. If you are writing an agent rather than an ' +
-        'integration, `freehire` covers the same surface with less ceremony — ' +
+        'integration, `HireAll` covers the same surface with less ceremony — ' +
         'search, tracking, the inbox and CV tailoring — over one API key.',
     ],
   },
@@ -390,7 +390,7 @@ export const GROUPS: Group[] = [
           'adjacent, and missing, plus a coverage percent. A caller without a saved ' +
           'profile is a 404.',
         pathParams: [{ name: 'slug', type: 'string', required: true, description: 'The job `public_slug`.' }],
-        curl: `curl "${BASE_URL}/jobs/<slug>/match" -H "Authorization: Bearer $FREEHIRE_API_KEY"`,
+        curl: `curl "${BASE_URL}/jobs/<slug>/match" -H "Authorization: Bearer $HIREALL_API_KEY"`,
         responseExample: `{
   "data": {
     "total": 12,
@@ -414,7 +414,7 @@ export const GROUPS: Group[] = [
           '`has_cv` is false when you have no stored CV. `allowance` reports how much of ' +
           'today you have used against what the day allows, and when it resets.',
         pathParams: [{ name: 'slug', type: 'string', required: true, description: 'The job `public_slug`.' }],
-        curl: `curl "${BASE_URL}/jobs/<slug>/match-analysis" -H "Authorization: Bearer $FREEHIRE_API_KEY"`,
+        curl: `curl "${BASE_URL}/jobs/<slug>/match-analysis" -H "Authorization: Bearer $HIREALL_API_KEY"`,
         responseExample: `{
   "data": {
     "has_cv": true,
@@ -444,7 +444,7 @@ export const GROUPS: Group[] = [
           'an already-analyzed job is free. `has_cv` is false when no CV is stored; a ' +
           'failing or unconfigured LLM returns a null analysis (200).',
         pathParams: [{ name: 'slug', type: 'string', required: true, description: 'The job `public_slug`.' }],
-        curl: `curl -X POST "${BASE_URL}/jobs/<slug>/match-analysis" -H "Authorization: Bearer $FREEHIRE_API_KEY"`,
+        curl: `curl -X POST "${BASE_URL}/jobs/<slug>/match-analysis" -H "Authorization: Bearer $HIREALL_API_KEY"`,
         responseExample: `{
   "data": {
     "has_cv": true,
@@ -465,7 +465,7 @@ export const GROUPS: Group[] = [
           '`dimensions`, `final`; the `final` event carries the completed `analysis` ' +
           '(the same shape as the match-analysis endpoints). Not a JSON endpoint.',
         pathParams: [{ name: 'slug', type: 'string', required: true, description: 'The job `public_slug`.' }],
-        curl: `curl -N "${BASE_URL}/jobs/<slug>/match-analysis/stream" -H "Authorization: Bearer $FREEHIRE_API_KEY"`,
+        curl: `curl -N "${BASE_URL}/jobs/<slug>/match-analysis/stream" -H "Authorization: Bearer $HIREALL_API_KEY"`,
         responseExample: `data: {"kind":"stage_start","stage":1,"label":"Extracting requirements"}
 
 data: {"kind":"requirements","requirements":[ { "...": "..." } ]}
@@ -490,7 +490,7 @@ data: {"kind":"final","analysis":{"overall_score":82,"verdict":"Strong Fit","...
           { name: 'skills', type: 'string[]', required: true, description: 'The skill list to score (max 100).', example: '["go","postgresql"]' },
         ],
         curl: `curl -X POST "${BASE_URL}/market/coverage?category=backend" \\
-  -H "Authorization: Bearer $FREEHIRE_API_KEY" \\
+  -H "Authorization: Bearer $HIREALL_API_KEY" \\
   -H 'Content-Type: application/json' \\
   -d '{"skills":["go","postgresql"]}'`,
         responseExample: `{
@@ -835,7 +835,7 @@ data: {"kind":"final","analysis":{"overall_score":82,"verdict":"Strong Fit","...
         path: '/auth/me',
         auth: 'cookie-or-key',
         summary: 'The current user (cookie or API key).',
-        curl: `curl "${BASE_URL}/auth/me" -H "Authorization: Bearer $FREEHIRE_API_KEY"`,
+        curl: `curl "${BASE_URL}/auth/me" -H "Authorization: Bearer $HIREALL_API_KEY"`,
         responseExample: `{ "data": { "id": 1, "email": "me@example.com", "role": "user" } }`,
       },
       {
@@ -933,7 +933,7 @@ ${BASE_URL}/auth/oauth/google/start`,
         method: 'GET',
         path: '/auth/extension/connect',
         auth: 'extension',
-        summary: 'Consent screen for "Sign in with freehire" from the browser extension.',
+        summary: 'Consent screen for "Sign in with HireAll" from the browser extension.',
         description:
           'Opened by the extension via `chrome.identity.launchWebAuthFlow`, not ' +
           'called directly — renders an HTML consent page, not JSON. ' +
@@ -1021,7 +1021,7 @@ ${BASE_URL}/auth/extension/connect?redirect_uri=https://<extension-id>.chromiuma
         auth: 'cookie-or-key',
         summary: 'Record that you viewed the job.',
         pathParams: [{ name: 'slug', type: 'string', required: true, description: 'The job `public_slug`.' }],
-        curl: `curl -X POST "${BASE_URL}/jobs/<slug>/view" -H "Authorization: Bearer $FREEHIRE_API_KEY"`,
+        curl: `curl -X POST "${BASE_URL}/jobs/<slug>/view" -H "Authorization: Bearer $HIREALL_API_KEY"`,
         responseExample: `{ "data": { "job_id": 42, "viewed_at": "2026-06-19T10:00:00Z" } }`,
       },
       {
@@ -1046,7 +1046,7 @@ ${BASE_URL}/auth/extension/connect?redirect_uri=https://<extension-id>.chromiuma
           },
         ],
         curl: `curl -X POST "${BASE_URL}/jobs/<slug>/apply" \\
-  -H "Authorization: Bearer $FREEHIRE_API_KEY" -H 'Content-Type: application/json' \\
+  -H "Authorization: Bearer $HIREALL_API_KEY" -H 'Content-Type: application/json' \\
   -d '{"applied_on":"2026-07-27"}'`,
         responseExample: `{ "data": { "job_id": 42, "applied_at": "2026-07-27T12:00:00Z" } }`,
       },
@@ -1056,7 +1056,7 @@ ${BASE_URL}/auth/extension/connect?redirect_uri=https://<extension-id>.chromiuma
         auth: 'cookie-or-key',
         summary: 'Save (bookmark) the job.',
         pathParams: [{ name: 'slug', type: 'string', required: true, description: 'The job `public_slug`.' }],
-        curl: `curl -X POST "${BASE_URL}/jobs/<slug>/save" -H "Authorization: Bearer $FREEHIRE_API_KEY"`,
+        curl: `curl -X POST "${BASE_URL}/jobs/<slug>/save" -H "Authorization: Bearer $HIREALL_API_KEY"`,
         responseExample: `{ "data": { "job_id": 42, "saved_at": "2026-06-19T10:00:00Z" } }`,
       },
       {
@@ -1065,7 +1065,7 @@ ${BASE_URL}/auth/extension/connect?redirect_uri=https://<extension-id>.chromiuma
         auth: 'cookie-or-key',
         summary: 'Unsave the job (no-op if not saved).',
         pathParams: [{ name: 'slug', type: 'string', required: true, description: 'The job `public_slug`.' }],
-        curl: `curl -X DELETE "${BASE_URL}/jobs/<slug>/save" -H "Authorization: Bearer $FREEHIRE_API_KEY"`,
+        curl: `curl -X DELETE "${BASE_URL}/jobs/<slug>/save" -H "Authorization: Bearer $HIREALL_API_KEY"`,
         responseExample: `{ "data": { "job_id": 42, "saved_at": null } }`,
       },
       {
@@ -1084,7 +1084,7 @@ ${BASE_URL}/auth/extension/connect?redirect_uri=https://<extension-id>.chromiuma
           { name: 'notes', type: 'string', description: 'Free-text notes.' },
         ],
         curl: `curl -X PATCH "${BASE_URL}/jobs/<slug>/track" \\
-  -H "Authorization: Bearer $FREEHIRE_API_KEY" \\
+  -H "Authorization: Bearer $HIREALL_API_KEY" \\
   -H 'Content-Type: application/json' \\
   -d '{"stage":"interview","notes":"call on Friday"}'`,
         responseExample: `{ "data": { "job_id": 42, "stage": "interview", "notes": "call on Friday" } }`,
@@ -1095,7 +1095,7 @@ ${BASE_URL}/auth/extension/connect?redirect_uri=https://<extension-id>.chromiuma
         auth: 'cookie-or-key',
         summary: 'Clear the application stage.',
         pathParams: [{ name: 'slug', type: 'string', required: true, description: 'The job `public_slug`.' }],
-        curl: `curl -X DELETE "${BASE_URL}/jobs/<slug>/stage" -H "Authorization: Bearer $FREEHIRE_API_KEY"`,
+        curl: `curl -X DELETE "${BASE_URL}/jobs/<slug>/stage" -H "Authorization: Bearer $HIREALL_API_KEY"`,
         responseExample: `{ "data": { "job_id": 42, "stage": null } }`,
       },
       {
@@ -1104,7 +1104,7 @@ ${BASE_URL}/auth/extension/connect?redirect_uri=https://<extension-id>.chromiuma
         auth: 'cookie-or-key',
         summary: 'Remove the interaction record entirely.',
         pathParams: [{ name: 'slug', type: 'string', required: true, description: 'The job `public_slug`.' }],
-        curl: `curl -X DELETE "${BASE_URL}/jobs/<slug>/track" -H "Authorization: Bearer $FREEHIRE_API_KEY"`,
+        curl: `curl -X DELETE "${BASE_URL}/jobs/<slug>/track" -H "Authorization: Bearer $HIREALL_API_KEY"`,
         responseExample: `{ "data": { "ok": true } }`,
       },
       {
@@ -1123,7 +1123,7 @@ ${BASE_URL}/auth/extension/connect?redirect_uri=https://<extension-id>.chromiuma
           { name: 'notes', type: 'string', description: 'Free-text notes.' },
         ],
         curl: `curl -X PATCH "${BASE_URL}/me/applications/42" \\
-  -H "Authorization: Bearer $FREEHIRE_API_KEY" \\
+  -H "Authorization: Bearer $HIREALL_API_KEY" \\
   -H 'Content-Type: application/json' \\
   -d '{"stage":"interview"}'`,
         responseExample: `{ "data": { "job_id": 42, "stage": "interview", "notes": null } }`,
@@ -1134,7 +1134,7 @@ ${BASE_URL}/auth/extension/connect?redirect_uri=https://<extension-id>.chromiuma
         auth: 'cookie-or-key',
         summary: 'Remove the interaction record entirely, addressed by row id.',
         pathParams: [{ name: 'id', type: 'integer', required: true, description: 'The tracking row id.', example: '42' }],
-        curl: `curl -X DELETE "${BASE_URL}/me/applications/42" -H "Authorization: Bearer $FREEHIRE_API_KEY"`,
+        curl: `curl -X DELETE "${BASE_URL}/me/applications/42" -H "Authorization: Bearer $HIREALL_API_KEY"`,
         responseExample: `{ "data": { "ok": true } }`,
       },
       {
@@ -1143,7 +1143,7 @@ ${BASE_URL}/auth/extension/connect?redirect_uri=https://<extension-id>.chromiuma
         auth: 'cookie-or-key',
         summary: 'Clear the application stage, addressed by row id.',
         pathParams: [{ name: 'id', type: 'integer', required: true, description: 'The tracking row id.', example: '42' }],
-        curl: `curl -X DELETE "${BASE_URL}/me/applications/42/stage" -H "Authorization: Bearer $FREEHIRE_API_KEY"`,
+        curl: `curl -X DELETE "${BASE_URL}/me/applications/42/stage" -H "Authorization: Bearer $HIREALL_API_KEY"`,
         responseExample: `{ "data": { "job_id": 42, "stage": null } }`,
       },
       {
@@ -1155,7 +1155,7 @@ ${BASE_URL}/auth/extension/connect?redirect_uri=https://<extension-id>.chromiuma
           'Only keeps the job out of the swipe deck; it stays visible in the public ' +
           '`/jobs` list and search. Idempotent.',
         pathParams: [{ name: 'slug', type: 'string', required: true, description: 'The job `public_slug`.' }],
-        curl: `curl -X POST "${BASE_URL}/jobs/<slug>/dismiss" -H "Authorization: Bearer $FREEHIRE_API_KEY"`,
+        curl: `curl -X POST "${BASE_URL}/jobs/<slug>/dismiss" -H "Authorization: Bearer $HIREALL_API_KEY"`,
         responseExample: `{ "data": { "job_id": 42, "dismissed_at": "2026-06-19T10:00:00Z", "saved_at": null, "stage": null } }`,
       },
       {
@@ -1164,7 +1164,7 @@ ${BASE_URL}/auth/extension/connect?redirect_uri=https://<extension-id>.chromiuma
         auth: 'cookie-or-key',
         summary: 'Undismiss the job (no-op if not dismissed).',
         pathParams: [{ name: 'slug', type: 'string', required: true, description: 'The job `public_slug`.' }],
-        curl: `curl -X DELETE "${BASE_URL}/jobs/<slug>/dismiss" -H "Authorization: Bearer $FREEHIRE_API_KEY"`,
+        curl: `curl -X DELETE "${BASE_URL}/jobs/<slug>/dismiss" -H "Authorization: Bearer $HIREALL_API_KEY"`,
         responseExample: `{ "data": { "job_id": 42, "dismissed_at": null } }`,
       },
       {
@@ -1184,7 +1184,7 @@ ${BASE_URL}/auth/extension/connect?redirect_uri=https://<extension-id>.chromiuma
           { name: 'limit', type: 'integer', description: 'Page size, 1–100.', example: '20' },
           { name: 'offset', type: 'integer', description: 'Rows to skip.', example: '0' },
         ],
-        curl: `curl "${BASE_URL}/me/tracking?filter=applied" -H "Authorization: Bearer $FREEHIRE_API_KEY"`,
+        curl: `curl "${BASE_URL}/me/tracking?filter=applied" -H "Authorization: Bearer $HIREALL_API_KEY"`,
         responseExample: `{
   "data": [
     {
@@ -1209,7 +1209,7 @@ ${BASE_URL}/auth/extension/connect?redirect_uri=https://<extension-id>.chromiuma
         path: '/me/tracking/viewed',
         auth: 'cookie-or-key',
         summary: 'Slugs of jobs you have viewed.',
-        curl: `curl "${BASE_URL}/me/tracking/viewed" -H "Authorization: Bearer $FREEHIRE_API_KEY"`,
+        curl: `curl "${BASE_URL}/me/tracking/viewed" -H "Authorization: Bearer $HIREALL_API_KEY"`,
         responseExample: `{ "data": ["senior-go-engineer-acme-1a2b", "..."] }`,
       },
       {
@@ -1221,7 +1221,7 @@ ${BASE_URL}/auth/extension/connect?redirect_uri=https://<extension-id>.chromiuma
           'Newest first, closed jobs included (with `closed: true`). Each item carries the ' +
           'overall score and verdict; `stale` marks an analysis whose CV, job, or model has ' +
           'changed since. `meta.allowance` reports where you stand on the day’s analyses. Never runs the LLM.',
-        curl: `curl "${BASE_URL}/me/tracking/analyses" -H "Authorization: Bearer $FREEHIRE_API_KEY"`,
+        curl: `curl "${BASE_URL}/me/tracking/analyses" -H "Authorization: Bearer $HIREALL_API_KEY"`,
         responseExample: `{
   "data": [
     {
@@ -1250,7 +1250,7 @@ ${BASE_URL}/auth/extension/connect?redirect_uri=https://<extension-id>.chromiuma
           '`unlimited` rather than as a number. `enforced` says whether that ceiling turns ' +
           'anybody away yet — while it is `false` a spent allowance is counted and the ' +
           'action still runs, so do not refuse on `used >= limit` alone. Never runs the LLM.',
-        curl: `curl "${BASE_URL}/me/plan" -H "Authorization: Bearer $FREEHIRE_API_KEY"`,
+        curl: `curl "${BASE_URL}/me/plan" -H "Authorization: Bearer $HIREALL_API_KEY"`,
         responseExample: `{
   "data": {
     "plan": "free",
@@ -1268,7 +1268,7 @@ ${BASE_URL}/auth/extension/connect?redirect_uri=https://<extension-id>.chromiuma
         auth: 'cookie-or-key',
         summary: 'Slugs of jobs you have saved.',
         description: 'Lets the SPA render the save toggle as filled without authenticating the public job reads.',
-        curl: `curl "${BASE_URL}/me/tracking/saved" -H "Authorization: Bearer $FREEHIRE_API_KEY"`,
+        curl: `curl "${BASE_URL}/me/tracking/saved" -H "Authorization: Bearer $HIREALL_API_KEY"`,
         responseExample: `{ "data": ["senior-go-engineer-acme-1a2b", "..."] }`,
       },
       {
@@ -1281,7 +1281,7 @@ ${BASE_URL}/auth/extension/connect?redirect_uri=https://<extension-id>.chromiuma
           'over all of your applications. Every stage of the vocabulary is present, zero ' +
           'included, and the counts always sum to `applications`. An application with ' +
           '`applied_at` set but no explicit stage counts as `applied`.',
-        curl: `curl "${BASE_URL}/me/tracking/pipeline" -H "Authorization: Bearer $FREEHIRE_API_KEY"`,
+        curl: `curl "${BASE_URL}/me/tracking/pipeline" -H "Authorization: Bearer $HIREALL_API_KEY"`,
         responseExample: `{
   "data": {
     "applications": 12,
@@ -1312,7 +1312,7 @@ ${BASE_URL}/auth/extension/connect?redirect_uri=https://<extension-id>.chromiuma
           { name: 'limit', type: 'integer', description: 'Page size, 1–100.', example: '20' },
           { name: 'offset', type: 'integer', description: 'Rows to skip; `offset + limit` ≤ 10000.', example: '0' },
         ],
-        curl: `curl "${BASE_URL}/me/tracking/swipe" -H "Authorization: Bearer $FREEHIRE_API_KEY"`,
+        curl: `curl "${BASE_URL}/me/tracking/swipe" -H "Authorization: Bearer $HIREALL_API_KEY"`,
         responseExample: `{
   "data": [ { "public_slug": "...", "title": "Senior Go Engineer", "...": "..." } ],
   "meta": { "total": 137, "limit": 20, "offset": 0 }
@@ -1337,7 +1337,7 @@ ${BASE_URL}/auth/extension/connect?redirect_uri=https://<extension-id>.chromiuma
           { name: 'from', type: 'string (RFC3339)', required: true, description: 'Lower bound, inclusive. Use `Z`, or percent-encode a numeric offset — a bare `+` decodes as a space in a query string and will be rejected.', example: '2026-08-01T00:00:00Z' },
           { name: 'to', type: 'string (RFC3339)', required: true, description: 'Upper bound, inclusive.', example: '2026-08-31T23:59:59Z' },
         ],
-        curl: `curl "${BASE_URL}/me/timeline?from=2026-08-01T00:00:00Z&to=2026-08-31T23:59:59Z" -H "Authorization: Bearer $FREEHIRE_API_KEY"`,
+        curl: `curl "${BASE_URL}/me/timeline?from=2026-08-01T00:00:00Z&to=2026-08-31T23:59:59Z" -H "Authorization: Bearer $HIREALL_API_KEY"`,
         responseExample: `{
   "data": [
     {
@@ -1383,7 +1383,7 @@ ${BASE_URL}/auth/extension/connect?redirect_uri=https://<extension-id>.chromiuma
           { name: 'from', type: 'string (RFC3339)', required: true, description: 'Lower bound, inclusive.', example: '2026-08-01T00:00:00Z' },
           { name: 'to', type: 'string (RFC3339)', required: true, description: 'Upper bound, inclusive.', example: '2026-08-31T23:59:59Z' },
         ],
-        curl: `curl "${BASE_URL}/me/interviews?from=2026-08-01T00:00:00Z&to=2026-08-31T23:59:59Z" -H "Authorization: Bearer $FREEHIRE_API_KEY"`,
+        curl: `curl "${BASE_URL}/me/interviews?from=2026-08-01T00:00:00Z&to=2026-08-31T23:59:59Z" -H "Authorization: Bearer $HIREALL_API_KEY"`,
         responseExample: `{
   "data": [
     {
@@ -1429,7 +1429,7 @@ ${BASE_URL}/auth/extension/connect?redirect_uri=https://<extension-id>.chromiuma
           { name: 'preset', type: 'string', description: 'One of `chat` (default), `profile`, `browse`, `interview`, `debrief`.', example: 'chat' },
           { name: 'job', type: 'string', description: 'Public slug of an application you hold. Required for `interview`/`debrief`, ignored otherwise.', example: 'senior-go-engineer-acme-1a2b' },
         ],
-        curl: `curl -X POST "${BASE_URL}/assistant/sessions?preset=chat" -H "Authorization: Bearer $FREEHIRE_API_KEY"`,
+        curl: `curl -X POST "${BASE_URL}/assistant/sessions?preset=chat" -H "Authorization: Bearer $HIREALL_API_KEY"`,
         responseExample: `{ "data": { "id": "b2f1c2b0-6e2a-4c9e-9c2e-0a1b2c3d4e5f", "preset": "chat", "label": "" } }`,
       },
       {
@@ -1438,7 +1438,7 @@ ${BASE_URL}/auth/extension/connect?redirect_uri=https://<extension-id>.chromiuma
         auth: 'cookie-or-key',
         summary: 'List your chat conversations, newest activity first.',
         description: 'Tailoring conversations are not chats — each belongs to a CV — so they never appear here.',
-        curl: `curl "${BASE_URL}/assistant/sessions" -H "Authorization: Bearer $FREEHIRE_API_KEY"`,
+        curl: `curl "${BASE_URL}/assistant/sessions" -H "Authorization: Bearer $HIREALL_API_KEY"`,
         responseExample: `{
   "data": [
     { "id": "b2f1c2b0-6e2a-4c9e-9c2e-0a1b2c3d4e5f", "preset": "chat", "label": "Relocating to Berlin?" }
@@ -1452,7 +1452,7 @@ ${BASE_URL}/auth/extension/connect?redirect_uri=https://<extension-id>.chromiuma
         auth: 'cookie-or-key',
         summary: 'One owned conversation with its full transcript.',
         pathParams: [{ name: 'id', type: 'string (UUID)', required: true, description: 'The session id.', example: 'b2f1c2b0-6e2a-4c9e-9c2e-0a1b2c3d4e5f' }],
-        curl: `curl "${BASE_URL}/assistant/sessions/<id>" -H "Authorization: Bearer $FREEHIRE_API_KEY"`,
+        curl: `curl "${BASE_URL}/assistant/sessions/<id>" -H "Authorization: Bearer $HIREALL_API_KEY"`,
         responseExample: `{
   "data": {
     "session": { "id": "b2f1c2b0-6e2a-4c9e-9c2e-0a1b2c3d4e5f", "preset": "chat", "label": "Relocating to Berlin?" },
@@ -1470,7 +1470,7 @@ ${BASE_URL}/auth/extension/connect?redirect_uri=https://<extension-id>.chromiuma
         summary: 'Delete an owned conversation and its transcript.',
         description: 'Returns `204 No Content`.',
         pathParams: [{ name: 'id', type: 'string (UUID)', required: true, description: 'The session id.' }],
-        curl: `curl -X DELETE "${BASE_URL}/assistant/sessions/<id>" -H "Authorization: Bearer $FREEHIRE_API_KEY"`,
+        curl: `curl -X DELETE "${BASE_URL}/assistant/sessions/<id>" -H "Authorization: Bearer $HIREALL_API_KEY"`,
       },
       {
         method: 'POST',
@@ -1489,7 +1489,7 @@ ${BASE_URL}/auth/extension/connect?redirect_uri=https://<extension-id>.chromiuma
         pathParams: [{ name: 'id', type: 'string (UUID)', required: true, description: 'The session id.' }],
         body: [{ name: 'text', type: 'string', required: true, description: 'Your message.', example: 'Should I relocate for this role?' }],
         curl: `curl -N -X POST "${BASE_URL}/assistant/sessions/<id>/messages" \\
-  -H "Authorization: Bearer $FREEHIRE_API_KEY" -H 'Content-Type: application/json' \\
+  -H "Authorization: Bearer $HIREALL_API_KEY" -H 'Content-Type: application/json' \\
   -d '{"text":"Should I relocate for this role?"}'`,
         responseExample: `event: user_prompt
 data: {"type":"user_prompt","text":"Should I relocate for this role?"}
@@ -1509,7 +1509,7 @@ data: {"type":"result","stop_reason":"completed"}
         summary: 'Stop the session’s running turn.',
         description: 'A no-op (still `204`) when nothing is running — you cannot see whether a turn is live before asking.',
         pathParams: [{ name: 'id', type: 'string (UUID)', required: true, description: 'The session id.' }],
-        curl: `curl -X POST "${BASE_URL}/assistant/sessions/<id>/cancel" -H "Authorization: Bearer $FREEHIRE_API_KEY"`,
+        curl: `curl -X POST "${BASE_URL}/assistant/sessions/<id>/cancel" -H "Authorization: Bearer $HIREALL_API_KEY"`,
       },
       {
         method: 'POST',
@@ -1521,7 +1521,7 @@ data: {"type":"result","stop_reason":"completed"}
           '`.../messages`. `409` if the session’s preset does not open by itself, or if it ' +
           'already has an assistant message (an opening cannot be re-run).',
         pathParams: [{ name: 'id', type: 'string (UUID)', required: true, description: 'The session id.' }],
-        curl: `curl -N -X POST "${BASE_URL}/assistant/sessions/<id>/opening" -H "Authorization: Bearer $FREEHIRE_API_KEY"`,
+        curl: `curl -N -X POST "${BASE_URL}/assistant/sessions/<id>/opening" -H "Authorization: Bearer $HIREALL_API_KEY"`,
       },
       {
         method: 'POST',
@@ -1532,7 +1532,7 @@ data: {"type":"result","stop_reason":"completed"}
           'Re-runs the loop over the existing history (no body) — the same SSE shape as ' +
           '`.../messages`. `409 "nothing to retry"` when the session has no prior user message.',
         pathParams: [{ name: 'id', type: 'string (UUID)', required: true, description: 'The session id.' }],
-        curl: `curl -N -X POST "${BASE_URL}/assistant/sessions/<id>/retry" -H "Authorization: Bearer $FREEHIRE_API_KEY"`,
+        curl: `curl -N -X POST "${BASE_URL}/assistant/sessions/<id>/retry" -H "Authorization: Bearer $HIREALL_API_KEY"`,
       },
       {
         method: 'POST',
@@ -1548,7 +1548,7 @@ data: {"type":"result","stop_reason":"completed"}
           'allowance, and a day cannot be topped up. `402` when there is no session left to ' +
           'spend, with the same body every refusal carries.',
         pathParams: [{ name: 'id', type: 'string (UUID)', required: true, description: 'The session id.' }],
-        curl: `curl -X POST "${BASE_URL}/assistant/sessions/<id>/extend" -H "Authorization: Bearer $FREEHIRE_API_KEY"`,
+        curl: `curl -X POST "${BASE_URL}/assistant/sessions/<id>/extend" -H "Authorization: Bearer $HIREALL_API_KEY"`,
         responseExample: `{
   "data": {
     "turns": 15,
@@ -1569,7 +1569,7 @@ data: {"type":"result","stop_reason":"completed"}
           '`value` to `calls_url` (this deployment’s own realtime gateway, not api.openai.com ' +
           'directly) to negotiate the WebRTC call. `501` when voice mode is not configured.',
         pathParams: [{ name: 'id', type: 'string (UUID)', required: true, description: 'The session id.' }],
-        curl: `curl -X POST "${BASE_URL}/assistant/sessions/<id>/voice-token" -H "Authorization: Bearer $FREEHIRE_API_KEY"`,
+        curl: `curl -X POST "${BASE_URL}/assistant/sessions/<id>/voice-token" -H "Authorization: Bearer $HIREALL_API_KEY"`,
         responseExample: `{ "data": { "value": "ek_...", "model": "gpt-realtime", "calls_url": "https://freehire.me/api/v1/realtime/calls" } }`,
       },
       {
@@ -1586,7 +1586,7 @@ data: {"type":"result","stop_reason":"completed"}
           { name: 'content', type: 'string', required: true, description: 'The transcribed/spoken text.' },
         ],
         curl: `curl -X POST "${BASE_URL}/assistant/sessions/<id>/voice-turns" \\
-  -H "Authorization: Bearer $FREEHIRE_API_KEY" -H 'Content-Type: application/json' \\
+  -H "Authorization: Bearer $HIREALL_API_KEY" -H 'Content-Type: application/json' \\
   -d '{"role":"user","content":"I led the migration to Kubernetes."}'`,
       },
       {
@@ -1627,7 +1627,7 @@ data: {"type":"result","stop_reason":"completed"}
           { name: 'posted_at', type: 'string (RFC3339)', description: 'Original posting date (optional).' },
         ],
         curl: `curl -X POST "${BASE_URL}/submissions" \\
-  -H "Authorization: Bearer $FREEHIRE_API_KEY" \\
+  -H "Authorization: Bearer $HIREALL_API_KEY" \\
   -H 'Content-Type: application/json' \\
   -d '{"url":"https://acme.com/careers/123","title":"Senior Go Engineer","company":"Acme","remote":true}'`,
         responseExample: `{ "data": { "id": 9, "status": "pending", "title": "Senior Go Engineer", "company": "Acme", "url": "https://acme.com/careers/123" } }`,
@@ -1644,7 +1644,7 @@ data: {"type":"result","stop_reason":"completed"}
           '(shares the outbound-fetch budget).',
         body: [{ name: 'url', type: 'string', required: true, description: 'The job posting URL to parse.' }],
         curl: `curl -X POST "${BASE_URL}/submissions/prefill" \\
-  -H "Authorization: Bearer $FREEHIRE_API_KEY" -H 'Content-Type: application/json' \\
+  -H "Authorization: Bearer $HIREALL_API_KEY" -H 'Content-Type: application/json' \\
   -d '{"url":"https://boards.greenhouse.io/acme/jobs/123"}'`,
         responseExample: `{ "data": { "title": "Senior Go Engineer", "company": "Acme", "location": "Remote — EU", "description": "...", "work_mode": "remote", "employment_type": "full_time", "seniority": "senior", "skills": ["go"], "source": "greenhouse" } }`,
       },
@@ -1653,7 +1653,7 @@ data: {"type":"result","stop_reason":"completed"}
         path: '/me/submissions',
         auth: 'cookie-or-key',
         summary: 'Your own submission queue.',
-        curl: `curl "${BASE_URL}/me/submissions" -H "Authorization: Bearer $FREEHIRE_API_KEY"`,
+        curl: `curl "${BASE_URL}/me/submissions" -H "Authorization: Bearer $HIREALL_API_KEY"`,
         responseExample: `{ "data": [ { "id": 9, "status": "pending", "title": "Senior Go Engineer" } ] }`,
       },
       {
@@ -1706,7 +1706,7 @@ data: {"type":"result","stop_reason":"completed"}
           { name: 'contact_telegram', type: 'string', description: 'Optional contact handle.' },
         ],
         curl: `curl -X POST "${BASE_URL}/jobs/<slug>/reports" \\
-  -H "Authorization: Bearer $FREEHIRE_API_KEY" \\
+  -H "Authorization: Bearer $HIREALL_API_KEY" \\
   -H 'Content-Type: application/json' \\
   -d '{"reason":"expired","details":"posting returns 404"}'`,
         responseExample: `{ "data": { "id": 3, "status": "pending", "reason": "expired" } }`,
@@ -1795,7 +1795,7 @@ data: {"type":"result","stop_reason":"completed"}
           { name: 'applied_on', type: 'string', required: true, description: 'The day you applied (`YYYY-MM-DD`).', example: '2026-07-29' },
         ],
         curl: `curl -X POST "${BASE_URL}/jobs/<slug>/ghost-report" \\
-  -H "Authorization: Bearer $FREEHIRE_API_KEY" -H 'Content-Type: application/json' \\
+  -H "Authorization: Bearer $HIREALL_API_KEY" -H 'Content-Type: application/json' \\
   -d '{"applied_on":"2026-07-29"}'`,
         responseExample: `{ "data": { "job_id": 42, "applied_on": "2026-07-29", "created_at": "2026-07-29T10:00:00Z" } }`,
       },
@@ -1806,7 +1806,7 @@ data: {"type":"result","stop_reason":"completed"}
         summary: 'Withdraw your claim about this job.',
         description: 'A claim that is absent or already withdrawn is a `404`.',
         pathParams: [{ name: 'slug', type: 'string', required: true, description: 'The job `public_slug`.' }],
-        curl: `curl -X DELETE "${BASE_URL}/jobs/<slug>/ghost-report" -H "Authorization: Bearer $FREEHIRE_API_KEY"`,
+        curl: `curl -X DELETE "${BASE_URL}/jobs/<slug>/ghost-report" -H "Authorization: Bearer $HIREALL_API_KEY"`,
         responseExample: `(204 No Content)`,
       },
     ],
@@ -2074,7 +2074,7 @@ data: {"type":"result","stop_reason":"completed"}
         path: '/me/screening-answers',
         auth: 'cookie-or-key',
         summary: 'Your stored screening answers, or `null` if you have stated none.',
-        curl: `curl "${BASE_URL}/me/screening-answers" -H "Authorization: Bearer $FREEHIRE_API_KEY"`,
+        curl: `curl "${BASE_URL}/me/screening-answers" -H "Authorization: Bearer $HIREALL_API_KEY"`,
         responseExample: `{
   "data": {
     "authorized_countries": ["DE", "NL"],
@@ -2337,7 +2337,7 @@ data: {"type":"result","stop_reason":"completed"}
           'Discord has no deep-link URL equivalent to Telegram’s — paste the ' +
           'returned token into the bot’s `/link` slash command.',
         curl: `curl -X POST "${BASE_URL}/me/discord/link" -b cookies.txt`,
-        responseExample: `{ "data": { "token": "abc123...", "instructions": "In the freehire Discord server, run /link token:abc123..." } }`,
+        responseExample: `{ "data": { "token": "abc123...", "instructions": "In the HireAll Discord server, run /link token:abc123..." } }`,
       },
       {
         method: 'DELETE',
@@ -2498,7 +2498,7 @@ data: {"type":"result","stop_reason":"completed"}
           'spend is a plan allowance, reported by `/me/plan` over this same day. ' +
           'Never fails for a reason you could act on: no usage yet, or an ' +
           'unreachable gateway, both answer 200 with zeroes.',
-        curl: `curl "${BASE_URL}/me/usage" -H "Authorization: Bearer $FREEHIRE_API_KEY"`,
+        curl: `curl "${BASE_URL}/me/usage" -H "Authorization: Bearer $HIREALL_API_KEY"`,
         responseExample: `{ "data": { "requests": 42, "failed": 1, "tokens": 118000, "period": "2026-08-31", "resets_at": "2026-09-01T00:00:00Z" } }`,
       },
       {
@@ -2604,7 +2604,7 @@ data: {"type":"result","stop_reason":"completed"}
   {
     title: 'Link intake & discovery',
     intro:
-      'Turning a URL in the wild into something freehire knows about. One intake ' +
+      'Turning a URL in the wild into something HireAll knows about. One intake ' +
       'sequence serves every surface — the website, the bot, the extension and the ' +
       'CLI — deliberately, so a pasted link gets the same answer everywhere.',
     endpoints: [
@@ -2625,7 +2625,7 @@ data: {"type":"result","stop_reason":"completed"}
         method: 'POST',
         path: '/jobs/resolve',
         auth: 'cookie-or-key',
-        summary: 'Hand freehire a link: import the posting, and the board behind it.',
+        summary: 'Hand HireAll a link: import the posting, and the board behind it.',
         description:
           'Five outcomes in one shape, distinguished by status: **200 found** — the ' +
           'catalogue already carries the vacancy. Either the URL itself is stored (nothing ' +
@@ -3142,7 +3142,7 @@ data: {"type":"result","stop_reason":"completed"}
           'default, not a sentinel. `talent_network_public_id` rides along even ' +
           'when visibility is off, so the client can render the shareable URL a ' +
           'candidate would get before they turn it on.',
-        curl: `curl "${BASE_URL}/me/talent-network" -H "Authorization: Bearer $FREEHIRE_API_KEY"`,
+        curl: `curl "${BASE_URL}/me/talent-network" -H "Authorization: Bearer $HIREALL_API_KEY"`,
         responseExample: `{ "data": { "talent_network_visibility": "public", "talent_network_public_id": "5b1e2b7a-9c3d-4e21-8f0a-1234567890ab" } }`,
       },
       {
@@ -3699,7 +3699,7 @@ data: {"type":"result","stop_reason":"completed"}
           { name: 'stack', type: 'string[]', description: 'Technologies used, printed on the CV’s per-role stack line.' },
         ],
         curl: `curl -X POST "${BASE_URL}/me/experience/employments" \\
-  -H "Authorization: Bearer $FREEHIRE_API_KEY" -H 'Content-Type: application/json' \\
+  -H "Authorization: Bearer $HIREALL_API_KEY" -H 'Content-Type: application/json' \\
   -d '{"kind":"job","company":"Acme","role":"Senior Backend Engineer","start":"2023-02","current":true}'`,
         responseExample: `{ "data": { "id": "3fa8…", "kind": "job", "company": "Acme", "role": "Senior Backend Engineer", "start": "2023-02", "current": true } }`,
       },
@@ -3723,7 +3723,7 @@ data: {"type":"result","stop_reason":"completed"}
           { name: 'source_ref', type: 'string', description: 'Where this came from, for your own reference.' },
         ],
         curl: `curl -X POST "${BASE_URL}/me/experience/atoms" \\
-  -H "Authorization: Bearer $FREEHIRE_API_KEY" -H 'Content-Type: application/json' \\
+  -H "Authorization: Bearer $HIREALL_API_KEY" -H 'Content-Type: application/json' \\
   -d '{"claim":"Cut p99 checkout latency 40%","employment_id":"3fa8…","metrics":["40%","12k rps"]}'`,
         responseExample: `{ "data": { "id": "88b1…", "employment_id": "3fa8…", "claim": "Cut p99 checkout latency 40%", "metrics": ["40%", "12k rps"], "provenance": "manual" } }`,
       },
@@ -3750,8 +3750,8 @@ data: {"type":"result","stop_reason":"completed"}
     intro:
       'Your job mail, and the link between a message and the application it ' +
       'belongs to. Mail arrives three ways: a connected Gmail account, the hosted ' +
-      "freehire address, or a batch your own client pushed. Only the first two are " +
-      'classified by freehire — pushed mail is yours to triage, which is what makes ' +
+      "HireAll address, or a batch your own client pushed. Only the first two are " +
+      'classified by HireAll — pushed mail is yours to triage, which is what makes ' +
       'that tier free. Everything here takes a full-scope API key, so a harness can ' +
       'drive the whole surface; the Gmail consent redirect is the one exception and ' +
       'stays browser-only.',
@@ -3767,7 +3767,7 @@ data: {"type":"result","stop_reason":"completed"}
           'are omitted when nobody at the company ever replied, which is the common ' +
           'case: the draft is handed to you, nothing is sent.',
         pathParams: [{ name: 'slug', type: 'string', required: true, description: 'The job `public_slug`.' }],
-        curl: `curl "${BASE_URL}/me/tracking/<slug>/followup" -H "Authorization: Bearer $FREEHIRE_API_KEY"`,
+        curl: `curl "${BASE_URL}/me/tracking/<slug>/followup" -H "Authorization: Bearer $HIREALL_API_KEY"`,
         responseExample: `{ "data": { "subject": "Following up: Senior Go Engineer application", "body": "Hi …", "recipient": "recruiting@acme.com", "recipient_name": "Acme Recruiting", "days_silent": 12 } }`,
       },
       {
@@ -3781,7 +3781,7 @@ data: {"type":"result","stop_reason":"completed"}
           'hour: a double click overwrites the timestamp rather than logging a ' +
           'second event. Returns `204 No Content`.',
         pathParams: [{ name: 'slug', type: 'string', required: true, description: 'The job `public_slug`.' }],
-        curl: `curl -X POST "${BASE_URL}/me/tracking/<slug>/followup" -H "Authorization: Bearer $FREEHIRE_API_KEY"`,
+        curl: `curl -X POST "${BASE_URL}/me/tracking/<slug>/followup" -H "Authorization: Bearer $HIREALL_API_KEY"`,
       },
       {
         method: 'POST',
@@ -3796,7 +3796,7 @@ data: {"type":"result","stop_reason":"completed"}
           'Rate-limited. A `503` when no mail gateway is configured, a `502` when ' +
           'the model call fails.',
         pathParams: [{ name: 'slug', type: 'string', required: true, description: 'The job `public_slug`.' }],
-        curl: `curl -X POST "${BASE_URL}/me/tracking/<slug>/mail-recall" -H "Authorization: Bearer $FREEHIRE_API_KEY"`,
+        curl: `curl -X POST "${BASE_URL}/me/tracking/<slug>/mail-recall" -H "Authorization: Bearer $HIREALL_API_KEY"`,
         responseExample: `{
   "data": {
     "scanned": 340,
@@ -3820,7 +3820,7 @@ data: {"type":"result","stop_reason":"completed"}
         pathParams: [{ name: 'slug', type: 'string', required: true, description: 'The job `public_slug`.' }],
         body: [{ name: 'provider_id', type: 'string', required: true, description: 'The message’s `provider_id`, from a mail-recall response.' }],
         curl: `curl -X POST "${BASE_URL}/me/tracking/<slug>/mail-recall/link" \\
-  -H "Authorization: Bearer $FREEHIRE_API_KEY" -H 'Content-Type: application/json' \\
+  -H "Authorization: Bearer $HIREALL_API_KEY" -H 'Content-Type: application/json' \\
   -d '{"provider_id":"18f2a…"}'`,
         responseExample: `{ "data": { "id": 4822, "subject": "Interview invitation", "linked_slug": "senior-go-engineer-acme-1a2b", "link_source": "manual", "...": "..." } }`,
       },
@@ -3886,7 +3886,7 @@ data: {"type":"result","stop_reason":"completed"}
         auth: 'cookie-or-key',
         summary: 'Push a batch your own mail client fetched.',
         description:
-          'Stored under source `external`. freehire provides no transport here and ' +
+          'Stored under source `external`. HireAll provides no transport here and ' +
           'never classifies this mail — that is the point of the tier. `external_id` ' +
           '(the Message-ID in practice) is the dedup key: re-pushing the same id ' +
           'updates that message instead of storing a copy, so a nightly re-sync is ' +
@@ -4029,7 +4029,7 @@ data: {"type":"result","stop_reason":"completed"}
         method: 'GET',
         path: '/me/mailbox',
         auth: 'cookie-or-key',
-        summary: 'Your hosted freehire address, and whether the feature is configured.',
+        summary: 'Your hosted HireAll address, and whether the feature is configured.',
         description: '`address` is null until you claim one; `available` is false when the instance runs without a mailbox domain.',
         curl: `curl "${BASE_URL}/me/mailbox" -H "Authorization: Bearer fhk_…"`,
         responseExample: `{ "data": { "available": true, "address": "you@mail.freehire.me" } }`,
@@ -4105,7 +4105,7 @@ data: {"type":"result","stop_reason":"completed"}
           'recordings/hour per caller. `501` when no speech gateway is configured, ' +
           '`502` if the gateway call itself fails, `400` for an empty recording.',
         curl: `curl -X POST "${BASE_URL}/speech/transcriptions" \\
-  -H "Authorization: Bearer $FREEHIRE_API_KEY" \\
+  -H "Authorization: Bearer $HIREALL_API_KEY" \\
   -F "file=@dictation.webm"`,
         responseExample: `{ "data": { "text": "remote go engineer roles in Berlin" } }`,
       },

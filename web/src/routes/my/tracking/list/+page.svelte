@@ -6,7 +6,7 @@
 </script>
 
 <svelte:head>
-  <title>Tracking · List — freehire</title>
+  <title>Tracking · List — HireAll</title>
 </svelte:head>
 
 <!-- Same rows and the same application panel as the board, read as a list. -->

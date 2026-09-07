@@ -246,7 +246,7 @@
 <div class="flex flex-col gap-4">
   <div class="flex flex-col gap-1">
     <h1 class="text-2xl font-semibold tracking-tight">Integrations</h1>
-    <p class="text-sm text-muted-foreground">Connect the third-party accounts freehire can use on your behalf.</p>
+    <p class="text-sm text-muted-foreground">Connect the third-party accounts HireAll can use on your behalf.</p>
   </div>
 
   {#if googleNotice}
@@ -404,7 +404,7 @@
           </div>
           <p class="mt-1 text-xs text-muted-foreground">
             Link your account to run <code class="rounded bg-secondary px-1 py-0.5 font-mono text-xs">/contribute</code>
-            in the freehire Discord server — the same reward as pasting a link on
+            in the HireAll Discord server — the same reward as pasting a link on
             <a href={resolve('/my/contributions')} class="font-medium underline underline-offset-2 hover:opacity-80">
               Contributions
             </a>.
@@ -437,7 +437,7 @@
 
       {#if discordLinkResult}
         <div class="mt-3 rounded-md bg-secondary/40 p-3 text-xs">
-          <p>Paste this command in the freehire Discord server:</p>
+          <p>Paste this command in the HireAll Discord server:</p>
           <div class="mt-1 flex items-center gap-2">
             <code class="flex-1 overflow-x-auto rounded bg-background px-2 py-1.5 font-mono text-xs"
               >{discordCommand}</code
