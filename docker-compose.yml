@@ -11,7 +11,7 @@ services:
       POSTGRES_PASSWORD: hire
       POSTGRES_DB: hire
     ports:
-      - "${DB_HOST_PORT:-5432}:5432"
+      - "127.0.0.1:${DB_HOST_PORT:-5432}:5432"
     volumes:
       # postgres:18+ stores data in a version-specific subdirectory and expects
       # the volume at /var/lib/postgresql (not the legacy .../data path, which it
@@ -34,7 +34,7 @@ services:
       MEILI_MASTER_KEY: "${MEILI_MASTER_KEY:-dev-insecure-meili-key}"
       MEILI_ENV: development
     ports:
-      - "${MEILI_HOST_PORT:-7700}:7700"
+      - "127.0.0.1:${MEILI_HOST_PORT:-7700}:7700"
     volumes:
       - meilisearch_data:/meili_data
 
@@ -61,7 +61,7 @@ services:
       MINIO_ROOT_PASSWORD: minioadmin
     command: server /data
     ports:
-      - "${MINIO_HOST_PORT:-9000}:9000"
+      - "127.0.0.1:${MINIO_HOST_PORT:-9000}:9000"
     volumes:
       - minio_data:/data
 
@@ -136,6 +136,10 @@ services:
       # Required by the auth surface (server fails fast if unset or under 32 bytes).
       # Dev default — set a real, random JWT_SECRET in any non-local deployment.
       JWT_SECRET: "${JWT_SECRET:-dev-insecure-secret-change-me-0123456789}"
+      # Personal deployment: kept very long (see .env) so the one account you sign
+      # up with never gets logged out and you never see the sign-up/login screen
+      # again on this browser. Default (JWT_TTL unset) is 30 days.
+      JWT_TTL: "${JWT_TTL:-}"
       # OAuth callbacks redirect the browser back to this origin; it also
       # derives the per-provider callback URL registered at each provider.
       FRONTEND_ORIGIN: "${FRONTEND_ORIGIN:-http://localhost:5173}"
@@ -156,8 +160,25 @@ services:
       MEILI_URL: "http://meilisearch:7700"
       MEILI_MASTER_KEY: "${MEILI_MASTER_KEY:-dev-insecure-meili-key}"
       REDIS_URL: "redis://redis:6379/0"
+      # Personal "email me this application instead of the employer" feature
+      # (internal/api/handler/apply_email.go). Independent of the AWS SES block above --
+      # Resend needs only an API key. Unset means the endpoint 501s; the rest of the app
+      # is unaffected.
+      RESEND_API_KEY: "${RESEND_API_KEY:-}"
+      RESEND_FROM_EMAIL: "${RESEND_FROM_EMAIL:-}"
+      APPLY_FORWARD_EMAILS: "${APPLY_FORWARD_EMAILS:-}"
+      # Adzuna job source (sources/adzuna.yml, cmd/ingest). Both required or the
+      # provider is not registered -- unset means that source's entries simply
+      # fail config validation, the rest of ingest is unaffected.
+      ADZUNA_APP_ID: "${ADZUNA_APP_ID:-}"
+      ADZUNA_APP_KEY: "${ADZUNA_APP_KEY:-}"
     ports:
-      - "${HIRE_HOST_PORT:-8080}:8080"
+      - "127.0.0.1:${HIRE_HOST_PORT:-8080}:8080"
+    volumes:
+      # Board files for `cmd/ingest sources/<file>.yml`. Not baked into the image
+      # (see Dockerfile) so a source can be added/edited without a rebuild --
+      # read-only since the app never writes here.
+      - ./sources:/app/sources:ro
 
   # SvelteKit SSR frontend. nginx (:80) fronts both the Node SSR server and the
   # Go API, keeping them same-origin for the auth cookie. The browser talks only
