@@ -53,7 +53,6 @@
         { label: 'Hiring signal', href: resolve('/insights/companies') },
         { label: 'Trends', href: resolve('/trends') },
         { label: 'For AI agents', href: resolve('/agents') },
-        { label: 'CLI', href: resolve('/cli') },
         { label: 'ChatGPT', href: resolve('/chatgpt') },
         { label: 'API docs', href: resolve('/docs/api') },
       ],
@@ -62,9 +61,6 @@
       title: 'Company',
       links: [
         { label: 'About', href: resolve('/about') },
-        { label: 'Open', href: resolve('/open') },
-        { label: 'For companies', href: resolve('/for-companies') },
-        { label: 'Contribute', href: resolve('/contribute') },
         { label: 'Submit a job', href: resolve('/submit') },
         { label: 'Privacy', href: resolve('/privacy') },
         { label: 'Terms', href: resolve('/terms') },
@@ -75,7 +71,6 @@
   // External profiles: open in a new tab, each rendered with its ProviderIcon brand
   // mark. All three follow the muted text colour (so they match and hover works).
   const socials = [
-    { provider: 'github', label: 'GitHub', href: 'https://github.com/strelov1/freehire' },
     { provider: 'linkedin', label: 'LinkedIn', href: 'https://linkedin.com/company/HireAll-dev/' },
     { provider: 'telegram', label: 'Telegram', href: 'https://t.me/freehiredev' },
     { provider: 'discord', label: 'Discord', href: 'https://discord.gg/sYnZksswR' },
@@ -201,17 +196,9 @@
           {/each}
         </div>
       </div>
-      <p>
-        Free &amp; open-source.
-        <!-- eslint-disable-next-line svelte/no-navigation-without-resolve -- external repository URL opened in a new tab; not an internal route -->
-        <a href="https://github.com/strelov1/freehire"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="font-medium text-foreground transition-colors hover:text-muted-foreground"
-        >
-          View source on GitHub
-        </a>.
-      </p>
+      <!-- Open-source "view source" line removed from the UI -- this deployment
+           isn't the public open-source original, so pointing at that repo here
+           doesn't apply. -->
     </div>
   </div>
 </footer>

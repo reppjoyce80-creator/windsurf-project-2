@@ -28,7 +28,6 @@
     { value: compact(stats.jobs, '3.3M+'), label: 'open jobs' },
     { value: compact(stats.companies, '290K+'), label: 'companies' },
     { value: stats.sources == null ? '220+' : String(stats.sources), label: 'sources' },
-    { value: '100%', label: 'open source' },
   ]);
 
   // "Straight from the source" — the value prop that separates HireAll from an
@@ -50,11 +49,6 @@
       body: 'A liveness sweep probes open postings and closes the ones that 404 or expire, so what you open is still open.',
     },
   ];
-
-  const GITHUB = 'https://github.com/strelov1/freehire';
-  const CLI = 'https://github.com/strelov1/freehire-cli';
-  // Where a contributor opens a request to have a new source added.
-  const ISSUES = `${GITHUB}/issues`;
 
   // The real adapters behind the pipeline — listed verbatim so the page never
   // overpromises sources the ingest worker can't actually crawl.
@@ -168,7 +162,7 @@
   <section class="grid-bg relative -mx-4 px-4 pb-16 pt-14 sm:pt-20">
     <div class="grid items-center gap-12 lg:grid-cols-[1.05fr_0.95fr]">
       <div>
-        <SectionLabel text="open-source · free &amp; transparent" class="reveal" style="--d:0ms" />
+        <SectionLabel text="free &amp; transparent" class="reveal" style="--d:0ms" />
 
         <h1
           class="reveal mt-6 max-w-2xl text-balance text-5xl font-semibold leading-[0.95] tracking-tighter sm:text-7xl"
@@ -184,9 +178,6 @@
 
         <div class="reveal mt-9 flex flex-wrap items-center gap-3" style="--d:240ms">
           <Button href={resolve('/')} variant="primary" size="lg">Browse jobs</Button>
-          <Button href={GITHUB} target="_blank" rel="noopener noreferrer" variant="outline" size="lg">
-            View on GitHub ↗
-          </Button>
         </div>
       </div>
 
@@ -222,11 +213,11 @@
     </div>
   </section>
 
-  <!-- Catalogue scale, right under the fold: two live totals (server-loaded, with
-       a static "+" fallback) and two constants. The first proof of the hero's claim. -->
+  <!-- Catalogue scale, right under the fold: three live totals (server-loaded, with
+       a static "+" fallback). The first proof of the hero's claim. -->
   <section class="py-10 sm:py-12">
     <SectionLabel text="the catalogue" />
-    <dl class="mt-6 grid grid-cols-2 gap-px overflow-hidden rounded-xl border border-border bg-border sm:grid-cols-4">
+    <dl class="mt-6 grid grid-cols-3 gap-px overflow-hidden rounded-xl border border-border bg-border">
       {#each figures as f (f.label)}
         <div class="bg-background p-5 sm:p-6">
           <dt class="font-mono text-xs uppercase tracking-wide text-muted-foreground">{f.label}</dt>
@@ -364,71 +355,6 @@
       <div class="mt-8 flex flex-wrap gap-3">
         <Button href={resolve('/')} variant="primary" size="lg">Find &amp; save a filter</Button>
         <Button href={resolve('/my/notifications/searches')} variant="ghost" size="lg">Saved searches &amp; alerts</Button>
-      </div>
-    </div>
-  </section>
-
-  <!-- CLI / agents — the same API from the terminal. Mirrors the open-source
-       section's two-column copy + terminal figure. -->
-  <section class="border-t border-border py-16 sm:py-20">
-    <SectionLabel text="for agents" />
-    <div class="mt-6 grid gap-10 lg:grid-cols-2 lg:items-center">
-      <div>
-        <h2 class="max-w-md text-3xl font-semibold tracking-tight sm:text-4xl">
-          Use it from the terminal. Built for agents.
-        </h2>
-        <p class="mt-5 max-w-md leading-relaxed text-muted-foreground">
-          HireAll is also a CLI, so an AI agent or a script can search, open and track jobs over the
-          same API — no browser. Create an API key and it lives in
-          <code class="font-mono text-foreground">~/.HireAll/creds.json</code>; add
-          <code class="font-mono text-foreground">--json</code> for machine-readable output.
-        </p>
-        <div class="mt-8 flex flex-wrap gap-3">
-          <Button href={resolve('/cli')} variant="primary" size="lg">Explore the CLI</Button>
-          <Button href={CLI} target="_blank" rel="noopener noreferrer" variant="ghost" size="lg">
-            View on GitHub ↗
-          </Button>
-        </div>
-      </div>
-
-      <figure
-        class="overflow-hidden rounded-xl border border-border bg-secondary/60 font-mono text-sm shadow-sm"
-      >
-        <figcaption
-          class="flex items-center gap-2 border-b border-border px-4 py-2.5 text-xs text-muted-foreground"
-        >
-          <span class="size-2.5 rounded-full bg-muted-foreground/30"></span>
-          terminal
-        </figcaption>
-        <pre class="overflow-x-auto p-4 leading-relaxed"><span class="text-muted-foreground"># install — no Go needed</span>
-curl -fsSL <span class="text-foreground">https://freehire.me/install.sh</span> | sh
-
-<span class="text-muted-foreground"># authenticate once, then search &amp; track</span>
-HireAll auth login --token <span class="text-foreground">fhk_…</span>
-HireAll search <span class="text-foreground">"golang"</span> --remote --region eu
-HireAll save <span class="text-foreground">&lt;slug&gt;</span></pre>
-      </figure>
-    </div>
-  </section>
-
-  <!-- Open source / contribute. -->
-  <section class="border-t border-border py-16 sm:py-20">
-    <SectionLabel text="open source" />
-    <div class="mt-6">
-      <h2 class="max-w-md text-3xl font-semibold tracking-tight sm:text-4xl">
-        Built in the open. Add your own source.
-      </h2>
-      <p class="mt-5 max-w-md leading-relaxed text-muted-foreground">
-        Missing a company or source? Open an issue and we'll add it. A new ATS platform is one adapter. The
-        backend is Go, the frontend is Svelte, the license is MIT — issues and pull requests welcome.
-      </p>
-      <div class="mt-8 flex flex-wrap gap-3">
-        <Button href={ISSUES} target="_blank" rel="noopener noreferrer" variant="primary" size="lg">
-          Add a source ↗
-        </Button>
-        <Button href={GITHUB} target="_blank" rel="noopener noreferrer" variant="ghost" size="lg">
-          Star on GitHub ↗
-        </Button>
       </div>
     </div>
   </section>
