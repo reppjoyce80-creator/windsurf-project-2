@@ -3,14 +3,18 @@ package handler
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"html"
+	"log"
 	"os"
+	"strconv"
 	"strings"
 
 	"github.com/strelov1/freehire/internal/application/jobtracking"
 	"github.com/strelov1/freehire/internal/candidate/cv"
 	"github.com/strelov1/freehire/internal/engage/applyemail"
+	"github.com/strelov1/freehire/internal/engage/telegramnotify"
 	"github.com/strelov1/freehire/internal/ingest/applyform"
 	"github.com/strelov1/freehire/internal/platform/db"
 )
@@ -51,7 +55,20 @@ func (h *cvHandlers) NotifyApplied(ctx context.Context, userID, jobID int64, slu
 	apiKey := strings.TrimSpace(os.Getenv("RESEND_API_KEY"))
 	from := strings.TrimSpace(os.Getenv("RESEND_FROM_EMAIL"))
 	to := splitAndTrim(os.Getenv("APPLY_FORWARD_EMAILS"))
-	if apiKey == "" || from == "" || len(to) == 0 {
+	emailConfigured := apiKey != "" && from != "" && len(to) > 0
+
+	// Same personal-use stance as the email above, on a second channel: a bot token
+	// this deployment already has (TELEGRAM_BOT_TOKEN, shared with the saved-search
+	// notifier) plus a fixed list of chat IDs to post applications to. Independent of
+	// the per-user /me/telegram link table on purpose -- this goes to the account
+	// holder's own chat(s) regardless of which user's session recorded the
+	// application, exactly like APPLY_FORWARD_EMAILS is a fixed address list rather
+	// than "the applying user's own email".
+	botToken := strings.TrimSpace(os.Getenv("TELEGRAM_BOT_TOKEN"))
+	chatIDs := parseChatIDs(os.Getenv("APPLY_TELEGRAM_CHAT_IDS"))
+	telegramConfigured := botToken != "" && len(chatIDs) > 0
+
+	if !emailConfigured && !telegramConfigured {
 		return nil
 	}
 
@@ -87,7 +104,7 @@ func (h *cvHandlers) NotifyApplied(ctx context.Context, userID, jobID int64, slu
 	// tailoring for it (ListTailored's JobSlug is exactly that binding). Renders through
 	// the same path as the CV builder's own "Download PDF" button (RenderCVPDF above).
 	var attachments []applyemail.Attachment
-	if h.cvRenderer != nil {
+	if emailConfigured && h.cvRenderer != nil {
 		if items, err := h.cvStore.ListTailored(ctx, userID); err == nil {
 			for _, it := range items {
 				if it.JobSlug != slug {
@@ -112,13 +129,28 @@ func (h *cvHandlers) NotifyApplied(ctx context.Context, userID, jobID int64, slu
 		}
 	}
 
-	subject := fmt.Sprintf("Application recorded: %s at %s", job.Title, job.Company)
-	client := applyemail.NewClient(apiKey, from)
-	body := applicationEmailHTML(job, form, letterBody, len(attachments) > 0, submission)
-	if err := client.Send(ctx, to, subject, body, attachments); err != nil {
-		return fmt.Errorf("apply-email: %w", err)
+	var errs []error
+
+	if emailConfigured {
+		subject := fmt.Sprintf("Application recorded: %s at %s", job.Title, job.Company)
+		client := applyemail.NewClient(apiKey, from)
+		body := applicationEmailHTML(job, form, letterBody, len(attachments) > 0, submission)
+		if err := client.Send(ctx, to, subject, body, attachments); err != nil {
+			errs = append(errs, fmt.Errorf("apply-email: %w", err))
+		}
 	}
-	return nil
+
+	if telegramConfigured {
+		msg := applicationTelegramMessage(job, submission, emailConfigured, len(attachments) > 0)
+		bot := telegramnotify.NewClient(botToken)
+		for _, chatID := range chatIDs {
+			if err := bot.SendMessage(ctx, chatID, msg); err != nil {
+				errs = append(errs, fmt.Errorf("apply-telegram: chat %d: %w", chatID, err))
+			}
+		}
+	}
+
+	return errors.Join(errs...)
 }
 
 // splitAndTrim reads a comma-separated env value into its non-empty, trimmed parts.
@@ -131,6 +163,70 @@ func splitAndTrim(raw string) []string {
 		}
 	}
 	return out
+}
+
+// parseChatIDs reads APPLY_TELEGRAM_CHAT_IDS -- a comma-separated list of Telegram
+// chat IDs (get your own from @userinfobot after messaging the bot, or read it back
+// off GET /me/telegram once you've linked your account through the site) -- into
+// int64s. An entry that fails to parse is logged and skipped rather than failing
+// the whole notification over one typo; the remaining valid chat IDs still get
+// posted to.
+func parseChatIDs(raw string) []int64 {
+	var out []int64
+	for _, part := range strings.Split(raw, ",") {
+		part = strings.TrimSpace(part)
+		if part == "" {
+			continue
+		}
+		id, err := strconv.ParseInt(part, 10, 64)
+		if err != nil {
+			log.Printf("apply-telegram: skipping invalid APPLY_TELEGRAM_CHAT_IDS entry %q: %v", part, err)
+			continue
+		}
+		out = append(out, id)
+	}
+	return out
+}
+
+// applicationTelegramMessage renders the same "application recorded" packet as
+// applicationEmailHTML, but for Telegram: parse_mode HTML only understands a small
+// tag subset (b, i, a, code, pre, u, s, tg-spoiler -- no headings, paragraphs, or
+// divs -- see telegramnotify.Client.SendMessage), so this is plain lines with
+// bold/link emphasis rather than sharing the email's markup. It is a quick
+// heads-up, not a replacement: the full packet (cover letter, the employer's own
+// screening questions, the CV itself) still only ever goes out by email, when that
+// channel is configured.
+func applicationTelegramMessage(job db.Job, submission *jobtracking.ApplySubmission, emailConfigured, cvAttached bool) string {
+	var b strings.Builder
+	fmt.Fprintf(&b, "\U0001F4E9 <b>Application recorded</b>\n%s\n%s\n",
+		html.EscapeString(job.Title), html.EscapeString(job.Company))
+	if job.URL != "" {
+		fmt.Fprintf(&b, "<a href=\"%s\">Real posting</a>\n", html.EscapeString(job.URL))
+	}
+
+	if submission != nil {
+		var contact []string
+		if name := submission.FullName(); name != "" {
+			contact = append(contact, html.EscapeString(name))
+		}
+		if submission.Email != "" {
+			contact = append(contact, html.EscapeString(submission.Email))
+		}
+		if submission.Phone != "" {
+			contact = append(contact, html.EscapeString(submission.Phone))
+		}
+		if len(contact) > 0 {
+			fmt.Fprintf(&b, "\n%s\n", strings.Join(contact, " \u00b7 "))
+		}
+	}
+
+	if emailConfigured {
+		if cvAttached {
+			b.WriteString("\n\U0001F4CE Tailored CV attached in the email.\n")
+		}
+		b.WriteString("\nFull details sent to your email.")
+	}
+	return b.String()
 }
 
 // writeSubmissionSections renders the candidate's own filled-in application --

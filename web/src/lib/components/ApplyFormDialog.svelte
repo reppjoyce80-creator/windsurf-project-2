@@ -264,11 +264,9 @@
   <form class="flex flex-col gap-6" onsubmit={submit}>
     <!-- The whole point of this deployment's Apply: fill this out like a real
          application, and it's emailed to the account holder to review and send
-         themselves -- it never reaches the employer. -->
-    <p class="text-xs text-muted-foreground">
-      This is emailed to you to review and send yourself -- it never goes to {job.company ||
-        'the employer'}.
-    </p>
+         themselves -- it never reaches the employer. (The explanatory line that
+         used to render here was removed from the UI itself; the behavior is
+         unchanged, see NotifyApplied.) -->
 
     <!-- 1. Personal & contact -->
     <div class="flex flex-col gap-3">
