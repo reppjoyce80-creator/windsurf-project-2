@@ -1,7 +1,7 @@
 <script lang="ts">
   import { resolve } from '$app/paths';
   import { goto } from '$app/navigation';
-  import { ArrowRight, FileText, SquarePen } from '@lucide/svelte';
+  import { ArrowRight, SquarePen } from '@lucide/svelte';
   import { refuses, remaining, resetsAtLabel } from '$lib/allowance';
   import { api } from '$lib/api';
   import { isAuthenticated } from '$lib/auth.svelte';
@@ -78,10 +78,8 @@
   <p class="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Analyze match</p>
 
   {#if data && !data.has_cv}
-    <div class="flex items-center justify-between gap-2">
-      <span class="flex items-center gap-1.5 text-xs text-muted-foreground"><FileText class="size-3.5 shrink-0" />Upload a CV to analyse</span>
-      <Button variant="primary" size="sm" href={resolve('/my/profile')}>Upload CV</Button>
-    </div>
+    <!-- No-CV prompt removed from the UI -- silent empty state rather than a
+         substitute call-to-action. -->
   {:else if analysis}
     {@const tone = verdictTone(analysis.overall_score)}
     <a href={resolve('/tailor/[slug]', { slug })} class="group flex flex-col gap-2 rounded-lg border border-border p-3 transition-colors hover:border-brand/40 hover:bg-accent/40">

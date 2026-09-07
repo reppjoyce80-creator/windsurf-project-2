@@ -33,7 +33,6 @@
   import { lockScroll, unlockScroll } from '$lib/scrollLock';
   import { cn } from '$lib/ui';
   import BrandMark from './BrandMark.svelte';
-  import GithubStars from './GithubStars.svelte';
   import { ProviderIcon } from '$lib/ui';
 
   // Same invite link as the footer's socials row (Footer.svelte) — no shared
@@ -179,11 +178,9 @@
 {/snippet}
 
 <div class="relative flex items-center gap-1" bind:this={root}>
-  <!-- Desktop bar order: GitHub stars, then the theme toggle (second), then the
-       menu button pinned to the far right. On mobile both GitHub and theme collapse
-       into the drawer (below), leaving just the menu button here. -->
-  <GithubStars class="hidden sm:inline-flex" />
-
+  <!-- Desktop bar order: theme toggle, then the menu button pinned to the far right.
+       On mobile theme collapses into the drawer (below), leaving just the menu
+       button here. -->
   <!-- eslint-disable-next-line svelte/no-navigation-without-resolve -- external Discord invite, not an internal route -->
   <a
     href={DISCORD_URL}
@@ -330,9 +327,8 @@
         </div>
       </div>
 
-      <!-- Mobile-only: GitHub + theme + auth pinned to the bottom of the drawer. -->
+      <!-- Mobile-only: theme + auth pinned to the bottom of the drawer. -->
       <div class="shrink-0 border-t border-border p-2 sm:hidden">
-        <GithubStars variant="row" class={cn(rowBase, 'text-muted-foreground')} />
         <!-- eslint-disable-next-line svelte/no-navigation-without-resolve -- external Discord invite, not an internal route -->
         <a
           href={DISCORD_URL}

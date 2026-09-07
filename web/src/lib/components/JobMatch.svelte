@@ -1,6 +1,6 @@
 <script lang="ts">
   import { resolve } from '$app/paths';
-  import { Ban, Check, FileText, Lock, RotateCcw, TriangleAlert } from '@lucide/svelte';
+  import { Ban, Check, Lock, RotateCcw, TriangleAlert } from '@lucide/svelte';
   import { api } from '$lib/api';
   import { isAuthenticated } from '$lib/auth.svelte';
   import { openAuthDialog } from '$lib/auth-dialog.svelte';
@@ -228,8 +228,6 @@
 
   const chipLabel = (skill: string) => (isAvoided(skill) ? `${skill} — you avoid this skill` : undefined);
 
-  const profileHref = resolve('/my/profile');
-
   /** Open the claim row for a skill, or close it if it is already the open one. Only one
    *  is open at a time — the row names its skill, which is what keeps it tied to the chip
    *  without anchoring a floating layer inside a narrow column. */
@@ -320,33 +318,30 @@
         </div>
       </div>
     {/if}
-    <!-- The dashed rule divides the teaser from the call-to-action; with no teaser above
-         it there is nothing to divide, so it goes. -->
-    <div
-      class={[
-        'flex items-center justify-between gap-2',
-        teaser && 'border-t border-dashed border-border pt-3',
-      ]}
-    >
-      {#if blockState === 'guest'}
+    <!-- Guest sign-in CTA only -- the no-profile "upload a CV" prompt that used to sit
+         in the {:else} branch here was removed from the UI, and its dashed divider goes
+         with it (same reasoning as the teaser comment above: nothing to divide when
+         there's nothing below it). -->
+    {#if blockState === 'guest'}
+      <div
+        class={[
+          'flex items-center justify-between gap-2',
+          teaser && 'border-t border-dashed border-border pt-3',
+        ]}
+      >
         <span class="flex items-center gap-1.5 text-xs text-muted-foreground">
           <Lock class="size-3.5 shrink-0" />Sign in to see your match
         </span>
         <Button variant="primary" size="sm" onclick={() => openAuthDialog('login')}>Sign in</Button>
-      {:else}
-        <span class="flex items-center gap-1.5 text-xs text-muted-foreground">
-          <FileText class="size-3.5 shrink-0" />Add your skills or upload a CV
-        </span>
-        <Button variant="primary" size="sm" href={profileHref}>Upload CV</Button>
-      {/if}
-    </div>
+      </div>
+    {/if}
 
     {#if blockState === 'guest'}
       <!-- The deep-dive offer stands on its own for a guest: it needs no match to make
            sense, and it is the stronger pitch of the two. Its button opens sign-in rather
            than the analysis page — MatchSummary handles that. Withheld from the no-profile
-           state, whose own "Upload CV" call-to-action sits directly above and would simply
-           be repeated. -->
+           state on purpose, to keep this file's own no-profile branch a plain, silent
+           empty state rather than substituting a different call-to-action in its place. -->
       <MatchSummary slug={job.public_slug} />
     {/if}
   {:else if blockState === 'ready' && view}

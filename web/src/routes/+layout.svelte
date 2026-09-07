@@ -19,7 +19,6 @@
   import CookieConsent from '$lib/components/CookieConsent.svelte';
   import ConfirmTailorDialog from '$lib/components/ConfirmTailorDialog.svelte';
   import CvRefreshDialog from '$lib/components/CvRefreshDialog.svelte';
-  import SupportToast from '$lib/components/SupportToast.svelte';
   import { ConfirmDialog } from '$lib/ui';
   import '../app.css';
   // Country-flag icon sheet (used by $lib/components/Flag.svelte). References its
@@ -194,12 +193,6 @@
 <!-- Consent banner: fixed-position, self-gating (renders only for a
      consent-required visitor with no choice, or when re-opened from the footer). -->
 <CookieConsent />
-
-<!-- Open-source support toast: fixed-position, so it belongs here rather than beside
-     <ProductHuntBanner /> up in the flow. Self-gating — it waits for the Product Hunt
-     strip to stop asking, yields this same corner to the consent banner above, and
-     retires for good once answered. -->
-<SupportToast />
 
 <CvRefreshDialog />
 

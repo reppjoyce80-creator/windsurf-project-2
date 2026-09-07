@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount, onDestroy } from 'svelte';
   import { resolve } from '$app/paths';
-  import { RefreshCw, FileText, Check, Loader, TriangleAlert } from '@lucide/svelte';
+  import { RefreshCw, Check, Loader, TriangleAlert } from '@lucide/svelte';
   import { refuses, resetsAtLabel } from '$lib/allowance';
   import { api } from '$lib/api';
   import { track } from '$lib/analytics';
@@ -291,11 +291,8 @@
       Sign in to analyse your match for this role.
     </p>
   {:else if !stream.hasCV}
-    <div class="flex flex-col items-center gap-4 rounded-xl border border-dashed border-border bg-card p-10 text-center">
-      <FileText class="size-8 text-muted-foreground" />
-      <p class="text-sm text-muted-foreground">Upload a CV to analyse your match for this role.</p>
-      <Button variant="primary" size="sm" href={resolve('/my/profile')}>Upload CV</Button>
-    </div>
+    <!-- No-CV prompt removed from the UI -- silent empty state rather than a
+         substitute call-to-action. -->
   {:else}
     <!-- The recommendation card — defined once, placed near the top in the stacked panel (where
          the punchline should lead) and at the bottom on the full-width page. -->
