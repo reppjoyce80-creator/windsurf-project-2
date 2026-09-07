@@ -167,6 +167,12 @@ services:
       RESEND_API_KEY: "${RESEND_API_KEY:-}"
       RESEND_FROM_EMAIL: "${RESEND_FROM_EMAIL:-}"
       APPLY_FORWARD_EMAILS: "${APPLY_FORWARD_EMAILS:-}"
+      # Telegram bot (from @BotFather) -- shared by the apply-notification channel
+      # above (internal/api/handler/apply_email.go) and the saved-search notifier
+      # (internal/engage/telegramnotify). Unset means both stay silently off.
+      TELEGRAM_BOT_TOKEN: "${TELEGRAM_BOT_TOKEN:-}"
+      # Comma-separated chat IDs (from @userinfobot) applications post to.
+      APPLY_TELEGRAM_CHAT_IDS: "${APPLY_TELEGRAM_CHAT_IDS:-}"
       # Adzuna job source (sources/adzuna.yml, cmd/ingest). Both required or the
       # provider is not registered -- unset means that source's entries simply
       # fail config validation, the rest of ingest is unaffected.
