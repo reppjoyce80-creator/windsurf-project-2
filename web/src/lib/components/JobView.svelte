@@ -14,7 +14,8 @@
   import { companyLogoUrl } from '$lib/logo';
   import { Badge, Button, Chip, EntityLogo, TabStrip, tabStripId } from '$lib/ui';
   import { formatDate } from '$lib/utils';
-  import BackerBadge from './BackerBadge.svelte';
+  import ApplyFormDialog from './ApplyFormDialog.svelte';
+import BackerBadge from './BackerBadge.svelte';
   import CountryFlagStack from './CountryFlagStack.svelte';
   import JobApplyForm, { applyFormWorthShowing } from './JobApplyForm.svelte';
   import JobCompanyPanel from './JobCompanyPanel.svelte';
@@ -41,9 +42,8 @@
   const contentLang = $derived(foreignContentLang(job));
 
   // The signed-in user's interaction with this job (null when signed out or not
-  // yet loaded). `showApplyPrompt` is the post-click "Did you apply?" question.
+  // yet loaded).
   let interaction = $state.raw<UserJob | null>(null);
-  let showApplyPrompt = $state(false);
   // Open-thread count for the "Discussion · N" badge; loaded client-side so the
   // page renders immediately and the number fills in. Failures leave it hidden.
   let threadCount = $state<number | null>(null);
@@ -57,11 +57,14 @@
       alive = false;
     };
   });
-  // Set after the user confirms "Yes" on the apply prompt: surfaces a one-tap
-  // link to the Tracking board where the job now sits. Reset when the job changes.
+  // Set once the Apply click has been recorded: surfaces a one-tap link to the
+  // Tracking board (and the real posting) now that the job is tracked. Reset
+  // when the job changes.
   let justApplied = $state(false);
   // Signed-out gate: the "Show" click offers sign-in before opening the posting.
   let showSignInPrompt = $state(false);
+  // Opens the application form; the dialog itself performs the submit.
+  let showApplyForm = $state(false);
   // The report dialog (a problem-with-this-job complaint) opens over the page.
   let showReport = $state(false);
   const applied = $derived(interaction?.applied_at != null);
@@ -124,9 +127,9 @@
   $effect(() => {
     const slug = job.public_slug; // track the current job
     interaction = null;
-    showApplyPrompt = false;
     justApplied = false;
     showSignInPrompt = false;
+    showApplyForm = false;
     if (!isAuthenticated()) return; // effects run client-only, so no browser guard needed
     api.recordJobView(slug)
       .then((rec) => {
@@ -137,20 +140,19 @@
       .catch(() => {});
   });
 
-  // The Apply link opens the external posting; once the user has gone to apply,
-  // offer the "Did you apply?" choice (only when signed in and not already applied).
-  // Signed-out visitors are gated first: the click is intercepted (the link does
-  // not open) and a sign-in offer is shown instead — the posting opens only via
-  // "View without signing in" below.
+  // The Apply button records the application directly — it no longer navigates
+  // to the employer's site (the real posting stays reachable via "View original
+  // posting" below, once the job is tracked). Signed-out visitors are gated
+  // first: the click is intercepted and a sign-in offer is shown instead.
   function onApplyClick(e: MouseEvent) {
+    e.preventDefault(); // this button never leaves the page
     // Apply-intent — fired regardless of auth (the CTA click is the funnel step).
     track('job_apply', { slug: job.public_slug, source: job.source });
     if (!isAuthenticated()) {
-      e.preventDefault();
       showSignInPrompt = true;
       return;
     }
-    if (!applied) showApplyPrompt = true;
+    if (!applied) showApplyForm = true;
   }
 
   // Gate — "Sign up" routes to the register dialog; "View without signing in"
@@ -165,21 +167,13 @@
     window.open(job.url, '_blank', 'noopener,noreferrer');
   }
 
-  async function confirmApplied() {
-    try {
-      interaction = await api.markJobApplied(job.public_slug);
-    } catch {
-      // Leave the prompt up so the user can retry; nothing else to do.
-      return;
-    }
-    showApplyPrompt = false;
-    justApplied = true; // offer the board link now that the job is tracked
+  // Called by ApplyFormDialog once it has actually submitted the form -- this only
+  // applies the result, it never calls the API itself.
+  function onApplicationSubmitted(result: UserJob) {
+    interaction = result;
+    showApplyForm = false;
+    justApplied = true; // offer the board link (and the real posting) now that the job is tracked
     track('job_track', { slug: job.public_slug, stage: 'applied' });
-  }
-
-  // "No": purely local — the job must not enter the tracker.
-  function dismissApplyPrompt() {
-    showApplyPrompt = false;
   }
 
   // Saving requires an account: a signed-out click opens the sign-in dialog
@@ -232,21 +226,25 @@
 <!-- The apply CTA renders twice: inline in the header on desktop, and in the
      mobile sticky bar at the end of the article. Sole difference is size + layout
      classes, so both share this snippet.
-     nofollow: the destination is the posting's own site, which the catalogue never
-     vetted — the same stance the description sanitizer takes on in-body links
-     (internal/sources/sanitize.go). Without it a submitted vacancy buys a followed
-     link from every job page, which is what the SEO submissions are actually after. -->
+     No href/target here on purpose (see design-system/src/button.svelte): without
+     an href, Button renders a plain <button type="button">, using the exact same
+     variant classes an anchor would -- so it looks identical, but it has no
+     default navigation at all for the browser to fall back to. Previously this was
+     a real <a href={job.url}> that onApplyClick's preventDefault() had to race to
+     intercept -- a click landing before Svelte finished hydrating (e.g. right
+     after a deploy, or a slow first load) would fall through to the real link and
+     leave the page. A plain button can't do that: worst case an early click is
+     just a dead click, never a leak to the employer's site. The real posting stays
+     reachable on purpose elsewhere (the "View original posting" link, and the
+     sign-out gate's "view without signing in"), so nothing loses access to it. -->
 {#snippet applyCta(size: 'md' | 'lg', className: string)}
   <Button
     variant="primary"
     {size}
-    href={job.url}
-    target="_blank"
-    rel="nofollow noopener noreferrer"
     onclick={onApplyClick}
     class={className}
   >
-    Show <ArrowRight class="size-4" />
+    Apply <ArrowRight class="size-4" />
   </Button>
 {/snippet}
 
@@ -345,31 +343,29 @@
       <ReferralBlock companySlug={job.company_slug} companyName={job.company} />
     {/if}
 
-    {#if showApplyPrompt && !applied}
-      <div
-        class="flex flex-wrap items-center justify-between gap-3 rounded-md border border-border bg-secondary px-4 py-3"
-      >
-        <span class="text-sm">Did you apply to this job?</span>
-        <div class="flex items-center gap-2">
-          <Button variant="primary" size="sm" onclick={confirmApplied}>Yes, save</Button>
-          <Button variant="ghost" size="sm" onclick={dismissApplyPrompt}>No</Button>
-        </div>
-      </div>
-    {/if}
-
-    {#if justApplied}
+    {#if justApplied || applied}
       <div
         class="flex flex-wrap items-center justify-between gap-3 rounded-md border border-brand/30 bg-brand-muted px-4 py-3"
       >
         <span class="inline-flex items-center gap-1.5 text-sm font-medium text-brand-strong">
           <CheckCircle2 class="size-4 shrink-0" aria-hidden="true" /> Added to your board
         </span>
-        <a
-          href={resolve('/my/tracking')}
-          class="text-sm font-medium text-brand-strong underline underline-offset-4"
-        >
-          View on your board →
-        </a>
+        <div class="flex items-center gap-3">
+          <a
+            href={job.url}
+            target="_blank"
+            rel="nofollow noopener noreferrer"
+            class="text-sm font-medium text-brand-strong underline underline-offset-4"
+          >
+            View original posting ↗
+          </a>
+          <a
+            href={resolve('/my/tracking')}
+            class="text-sm font-medium text-brand-strong underline underline-offset-4"
+          >
+            View on your board →
+          </a>
+        </div>
       </div>
     {/if}
 
@@ -566,6 +562,15 @@
     {@render applyCta('lg', 'pointer-events-auto w-full rounded-xl font-semibold shadow-lg')}
   </div>
 </article>
+
+{#if showApplyForm}
+  <ApplyFormDialog
+    {job}
+    {applyForm}
+    onSubmitted={onApplicationSubmitted}
+    onClose={() => (showApplyForm = false)}
+  />
+{/if}
 
 {#if showReport}
   <ReportDialog slug={job.public_slug} onClose={() => (showReport = false)} />
