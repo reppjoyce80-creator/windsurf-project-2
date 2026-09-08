@@ -268,6 +268,26 @@ func newCookieClient() *Client {
 	return c
 }
 
+// NewUserAgentClient builds a default ingest client whose User-Agent is userAgent instead
+// of the project default. USAJOBS is the one provider that treats User-Agent as an
+// identity field, not a client string: the API requires it to equal the email address
+// registered for the Authorization-Key, and 401s a request carrying anything else
+// (including the shared client's fixed User-Agent) -- see NewUSAJobs. No other adapter
+// needs this, so it stays a one-off client rather than a knob on the shared one.
+//
+// It also gets a longer per-request timeout than the shared client's 15s. USAJOBS'
+// 500-result page carries every posting's full description/duties/requirements inline
+// (usajobsPageSize), which is a big enough body that a live crawl timed out mid-page
+// (TLS handshake / context deadline exceeded) on pages that had already authenticated
+// fine -- this is payload size, not a retry-worthy transient failure, so a longer
+// window fixes it rather than a retry.
+func NewUserAgentClient(userAgent string) *Client {
+	c := NewClient()
+	c.userAgent = userAgent
+	c.httpClient = safehttp.NewClientWithProxy(60*time.Second, nil)
+	return c
+}
+
 // streamTimeout bounds a GetStream read. Generous because the throttled bulk feeds it
 // serves trickle in over many minutes; the per-run page/window budget keeps the actual
 // transfer well under this ceiling, which is only a stuck-connection backstop.

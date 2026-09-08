@@ -3,6 +3,7 @@ package sources
 import (
 	"os"
 	"slices"
+	"strings"
 	"time"
 )
 
@@ -316,7 +317,18 @@ func All(c HTTPClient) map[string]Source {
 	// Conflating the two classified whatjobs — a CPC reseller of first-party ATS postings — as
 	// an ATS on every keyless host, so none of its copies was ever suppressed.
 	if key := os.Getenv("USAJOBS_API_KEY"); c == nil || key != "" {
-		registry["usajobs"] = NewUSAJobs(c, key)
+		// USAJOBS requires the request's User-Agent to be the email address registered
+		// for this key, which the shared client's fixed User-Agent is not (see
+		// NewUSAJobs / NewUserAgentClient) -- so a configured USAJOBS_USER_AGENT gets its
+		// own client instead of the shared one. The taxonomy path (c == nil) never makes
+		// a request, so it has nothing to build.
+		client := c
+		if c != nil {
+			if ua := strings.TrimSpace(os.Getenv("USAJOBS_USER_AGENT")); ua != "" {
+				client = NewUserAgentClient(ua)
+			}
+		}
+		registry["usajobs"] = NewUSAJobs(client, key)
 	}
 	if key := os.Getenv("REED_API_KEY"); c == nil || key != "" {
 		registry["reed"] = NewReed(c, key)

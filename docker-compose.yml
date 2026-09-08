@@ -178,6 +178,15 @@ services:
       # fail config validation, the rest of ingest is unaffected.
       ADZUNA_APP_ID: "${ADZUNA_APP_ID:-}"
       ADZUNA_APP_KEY: "${ADZUNA_APP_KEY:-}"
+      # USAJOBS job source (sources/usajobs.yml, cmd/ingest). Request a key at
+      # https://developer.usajobs.gov/apirequest/ -- it is emailed to you automatically
+      # on submit, so check spam if it does not show up. USAJOBS also requires the
+      # request's User-Agent to be that same registered email or it 401s, so set
+      # USAJOBS_USER_AGENT to it too (see NewUserAgentClient). Unset key means the
+      # provider is not registered; unset user-agent still registers it but every
+      # request will fail authentication.
+      USAJOBS_API_KEY: "${USAJOBS_API_KEY:-}"
+      USAJOBS_USER_AGENT: "${USAJOBS_USER_AGENT:-}"
     ports:
       - "127.0.0.1:${HIRE_HOST_PORT:-8080}:8080"
     volumes:

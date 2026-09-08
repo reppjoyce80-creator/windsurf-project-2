@@ -18,6 +18,11 @@ import (
 // It is the one KEYED source: the API is gated behind an Authorization-Key header, so the
 // adapter is registered only when USAJOBS_API_KEY is configured (see All). The key is a
 // secret and lives in the environment, never in a board file.
+//
+// USAJOBS also requires the request's User-Agent to be the email address registered for
+// that key -- a generic client User-Agent (the shared client's default) gets a 401 even
+// with a valid key. Set USAJOBS_USER_AGENT to that email so registry.go builds this
+// adapter its own client via NewUserAgentClient instead of handing it the shared one.
 type usajobs struct {
 	http   HeaderJSONGetter
 	apiKey string
