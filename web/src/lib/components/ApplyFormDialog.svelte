@@ -135,16 +135,32 @@
   let submitting = $state(false);
   let error = $state<string | null>(null);
 
-  // Required questions block submission the same way a real ATS form would --
-  // this deployment never contacts the employer, but filling out the form should
-  // still feel like the real thing rather than a formality with no teeth. Nothing
-  // else on this form is required: a real application form doesn't refuse a
-  // candidate who skipped the EEO section either.
-  function firstMissingRequired(): string | null {
+  // Filling out the form should feel like the real thing rather than a formality
+  // with no teeth, so the core identity/contact fields, address, and at least one
+  // work history entry are required the way a real ATS form would require them --
+  // this deployment never contacts the employer, but a submission with nothing in
+  // it isn't useful to send to yourself either. The EEO section stays voluntary
+  // regardless: real self-identification questions (race, gender, veteran status,
+  // disability) are opt-in by convention wherever they appear, not something to
+  // force just because this copy of the form never leaves the account holder's
+  // inbox. Country is likewise left optional -- the address hint under those
+  // fields only ever promised city/state/zip were "enough".
+  function firstValidationError(): string | null {
+    const missingField = (label: string) => `Please fill in: ${label}`;
+    if (!firstName.trim()) return missingField('First name');
+    if (!lastName.trim()) return missingField('Last name');
+    if (!email.trim()) return missingField('Email');
+    if (!phone.trim()) return missingField('Phone');
+    if (!city.trim()) return missingField('City');
+    if (!region.trim()) return missingField('State / region');
+    if (!postalCode.trim()) return missingField('Zip / postal code');
+    if (!workHistory.some((w) => w.company.trim() && w.title.trim())) {
+      return missingField('Work history (at least one job with company and title)');
+    }
     const questions = applyForm?.questions ?? [];
     for (let i = 0; i < questions.length; i++) {
       if (questions[i].required && !answers[i]?.trim()) {
-        return questions[i].text;
+        return `Please answer: ${questions[i].text}`;
       }
     }
     return null;
@@ -159,9 +175,9 @@
 
   async function submit(e: SubmitEvent) {
     e.preventDefault();
-    const missing = firstMissingRequired();
-    if (missing) {
-      error = `Please answer: ${missing}`;
+    const validationError = firstValidationError();
+    if (validationError) {
+      error = validationError;
       return;
     }
     error = null;
@@ -273,7 +289,7 @@
       <h3 class="text-sm font-semibold">Personal &amp; contact information</h3>
       <div class="grid grid-cols-1 gap-3 sm:grid-cols-3">
         <label class="flex flex-col gap-1.5 text-sm">
-          <span class="font-medium">First name</span>
+          <span class="font-medium">First name<span class="text-destructive"> *</span></span>
           <Input bind:value={firstName} placeholder="Jane" autocomplete="given-name" />
         </label>
         <label class="flex flex-col gap-1.5 text-sm">
@@ -281,34 +297,39 @@
           <Input bind:value={middleName} placeholder="Optional" autocomplete="additional-name" />
         </label>
         <label class="flex flex-col gap-1.5 text-sm">
-          <span class="font-medium">Last name</span>
+          <span class="font-medium">Last name<span class="text-destructive"> *</span></span>
           <Input bind:value={lastName} placeholder="Doe" autocomplete="family-name" />
         </label>
       </div>
       <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
         <label class="flex flex-col gap-1.5 text-sm">
-          <span class="font-medium">Email</span>
+          <span class="font-medium">Email<span class="text-destructive"> *</span></span>
           <Input type="email" bind:value={email} placeholder="you@example.com" autocomplete="email" />
         </label>
         <label class="flex flex-col gap-1.5 text-sm">
-          <span class="font-medium">Phone</span>
-          <Input type="tel" bind:value={phone} placeholder="Optional" autocomplete="tel" />
+          <span class="font-medium">Phone<span class="text-destructive"> *</span></span>
+          <Input type="tel" bind:value={phone} placeholder="(555) 123-4567" autocomplete="tel" />
         </label>
       </div>
-      <span class="text-xs text-muted-foreground">Current address (city, state/region and zip are enough)</span>
+      <span class="text-xs text-muted-foreground"
+        >Current address<span class="text-destructive"> *</span> (city, state/region and zip are required; country is
+        optional)</span
+      >
       <div class="grid grid-cols-2 gap-3 sm:grid-cols-4">
         <Input bind:value={city} placeholder="City" autocomplete="address-level2" />
         <Input bind:value={region} placeholder="State / region" autocomplete="address-level1" />
         <Input bind:value={postalCode} placeholder="Zip / postal code" autocomplete="postal-code" />
-        <Input bind:value={country} placeholder="Country" autocomplete="country-name" />
+        <Input bind:value={country} placeholder="Country (optional)" autocomplete="country-name" />
       </div>
     </div>
 
     <!-- 2. Work history -->
     <div class="flex flex-col gap-3 border-t border-border pt-4">
       <div class="flex items-center justify-between">
-        <h3 class="text-sm font-semibold">Work history</h3>
-        <span class="text-xs text-muted-foreground">Most recent job first</span>
+        <h3 class="text-sm font-semibold">Work history<span class="text-destructive"> *</span></h3>
+        <span class="text-xs text-muted-foreground"
+          >Most recent job first (at least one company and title required)</span
+        >
       </div>
       {#each workHistory as row, i (i)}
         <div class="flex flex-col gap-2 rounded-md border border-border p-3">
